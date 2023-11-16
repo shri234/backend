@@ -34,6 +34,7 @@ const addTicketDaily = async (req, res) => {
 let wallet_u=await Wallet.findOne({
   userId:parseInt(req.body.userId)
 })
+try{
 if(wallet_u.ticketCount>0){
     let wallet_update=await Wallet.updateOne({
       userId:parseInt(req.body.userId)
@@ -51,9 +52,10 @@ if(wallet_u.ticketCount>0){
       CreatedAt:date
     });
   }
-  else{
+}
+catch(error){
     console.log("tickets you have bought is complete please buy more");
-  }
+}
 
     const id = await getNextSequenceValue("id");
     let user_history = await History.create({
