@@ -34,7 +34,6 @@ const addTicketDaily = async (req, res) => {
 let wallet_u=await Wallet.findOne({
   userId:parseInt(req.body.userId)
 })
-try{
 if(wallet_u.ticketCount>0){
     let wallet_update=await Wallet.updateOne({
       userId:parseInt(req.body.userId)
@@ -52,10 +51,9 @@ if(wallet_u.ticketCount>0){
       CreatedAt:date
     });
   }
-}
-catch(error){
+  else{
     console.log("tickets you have bought is complete please buy more");
-}
+  }
 
     const id = await getNextSequenceValue("id");
     let user_history = await History.create({
@@ -378,29 +376,35 @@ const publish_result = async (req, res) => {
       } else if (j == 1) {
         if (ticket_data[i].ticket[1].digit == req.body[1].digit) {
           seconddigit = req.body[1].digit;
+          if(firstdigit!=undefined){
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
             "ticket.1.status":true
           })
         }
+        }
       } else if (j == 2) {
         if (ticket_data[i].ticket[2].digit == req.body[2].digit) {
           thirddigit = req.body[2].digit;
+          if(seconddigit!=undefined){
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
             "ticket.2.status":true
           })
         }
+        }
       } else if (j == 3) {
         if (ticket_data[i].ticket[3].digit == req.body[3].digit) {
           fourthdigit = req.body[3].digit;
+          if(thirddigit!=undefined){
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
             "ticket.3.status":true
-          })
+          });
+        }
         }
       }
     }
