@@ -70,6 +70,7 @@ const paymentIntegration = async (req, res) => {
 };
 
 const paymentVerification = async (req, res) => {  
+  try{
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     console.log("inside",req.body)
     const secret = "851T3W2pweEZN1sObpmvibd5";
@@ -82,9 +83,14 @@ const paymentVerification = async (req, res) => {
     } else {
       res.json({ success: false, message: "Payment verification failed" });
     }
+  }
+  catch(err){
+    console.error("Error",err)
+  }
   };
 
 const redeemHistory=async (req,res)=>{
+  try{
   const redeemId=await getNextSequenceValue("redeemId")
   const redeemHistory=await RedeemHistory.create({
     redeemId:redeemId,
@@ -94,12 +100,18 @@ const redeemHistory=async (req,res)=>{
   });
   return res.status(200).json({response:"Data Inserted successfully"});
 }
+catch(err){
+  console.error("Error",err)
+}
+}
 
 const getRedeemHistory=async (req,res)=>{
+  try{
   let pageno=req.query.pageno
   let skip_page=pageno*10
   let all=[];
   const redeemHistory=await RedeemHistory.find({
+    
   }).skip(skip_page).limit(10);
   for(let i=0;i<redeemHistory.length;i++){
   let get_all={
@@ -109,10 +121,13 @@ const getRedeemHistory=async (req,res)=>{
     status:redeemHistory[i].status,
     redeemId:redeemHistory[i].redeemId
   }
-  all.push(get_all)
+  all.push(get_all);
 }
   let get_count=await RedeemHistory.find({}).countDocuments();
   return res.status(200).json({response:"Got Data successfully",data:all,count:get_count});
+}catch(err){
+  console.error("Error",err)
+}
 }
 
 async function getNextSequenceValue(sequenceName) {

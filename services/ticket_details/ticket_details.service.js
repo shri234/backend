@@ -311,6 +311,7 @@ a=Math.min.apply(Math,lowestValueArr)
 };
 
 const getTickets = async (req, res) => {
+  try{
   let pageno = req.query.pageno;
   let skip_page = pageno * 10;
   let start_date = new Date(req.query.date);
@@ -339,6 +340,10 @@ const getTickets = async (req, res) => {
     data: get_tickets,
     count: ticket_count,
   });
+}
+catch(err){
+  console.error("Error",err)
+}
 };
 
 const publish_result = async (req, res) => {
@@ -429,6 +434,7 @@ const publish_result = async (req, res) => {
 };
 
 const getHistories = async (req, res) => {
+  try{
   let pageno = req.query.pageno;
   let skip_page = pageno * 10;
   let get_all = [];
@@ -453,9 +459,14 @@ const getHistories = async (req, res) => {
     data: get_all,
     count: get_count,
   });
+}
+catch(err){
+  console.error("Error",err)
+}
 };
 
 const addTicketRate = async (req, res) => {
+  try{
   let date=new Date()
   let start_date=new Date(date.setHours(date.getHours()+5))
   new Date(date.setMinutes(date.getMinutes()+30))
@@ -465,6 +476,10 @@ const addTicketRate = async (req, res) => {
   });
 
   return res.status(200).json({ response: "Added successfully" });
+}
+catch(err){
+  console.error("Error",err)
+}
 };
 
 const updateUserId=async (req,res)=>{
@@ -480,6 +495,7 @@ const updateUserId=async (req,res)=>{
 }
 
 const addWalletAmount=async(req,res)=>{
+  try{
   let date=new Date()
   let start_date=new Date(date.setHours(date.getHours()+5))
   new Date(date.setMinutes(date.getMinutes()+30))
@@ -487,7 +503,7 @@ const addWalletAmount=async(req,res)=>{
     userId:req.body.userId
   });
   let wallet;
-console.log("inside",wallet_find)
+
   if(wallet_find!=null){
     wallet=await Wallet.updateOne({
       userId:req.body.userId
@@ -519,7 +535,11 @@ console.log("inside",wallet_find)
     }
   )
 }
-  return res.status(200).json({response:"Data inserted successfully"})
+  return res.status(200).json({response:"Data inserted successfully"});
+}
+catch(err){
+  console.error("Error",err)
+}
 }
 
 const addWallettAmount=async(req,res)=>{
@@ -549,6 +569,7 @@ return res.status(200).json({response:"Data inserted successfully"})
 }
 
 const addTicketCount=async (req,res) =>{
+  try{
   let start_date=new Date(req.query.date);
   const ticketId = await getNextSequenceValue("ticketId");
   for(let i=0;i<parseInt(req.body.ticketCount);i++){
@@ -560,16 +581,24 @@ const addTicketCount=async (req,res) =>{
   }
   return res.status(200).json({response:"updated ticket count successfully"});
 }
+catch(err){
+  console.error("Error",err)
+}
+}
 
 const getTicketRate = async (req, res) => {
   let start_date = new Date(req.query.date);
-
+  try{
   let get_ticket_rate = await TicketRate.findOne({
     CreatedAt: { $gt: start_date},
   });
   return res
     .status(200)
     .json({ response: "Got Data successfully", data: get_ticket_rate });
+}
+catch(err){
+  console.error("Error",err)
+}
 };
 
 const getWalletHistory=async(req,res)=>{
@@ -577,6 +606,7 @@ const getWalletHistory=async(req,res)=>{
   let skip_page=pageno*10;
   let arr=[];
   let all_data={};
+  try{
   let get_wallet=await WalletHistory.find({
     userId:parseInt(req.query.userId)
   }).skip(skip_page).limit(10);
@@ -595,6 +625,10 @@ const getWalletHistory=async(req,res)=>{
     data:arr,
     count:get_count
   })
+}
+catch(err){
+  console.error("Error in getting wallet history Please check function",err)
+}
 }
 
 const getWallet=async(req,res)=>{
