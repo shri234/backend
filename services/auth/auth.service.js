@@ -9,6 +9,7 @@ const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
 
 const addUser = async (req, res) => {
+  try{
   const userId = await getNextSequenceValue("userId");
   // let password=encrypt(req.body.password);
   const user = await User.create({
@@ -22,7 +23,11 @@ const addUser = async (req, res) => {
   });
   console.log(user.userId);
 
-  return res.status(200).json(user);
+  return res.status(200).json({data:user});
+}
+catch(err){
+  console.error("Error",err)
+}
 };
 
 // function encrypt(text) {
@@ -67,6 +72,12 @@ const user_login = async (req, res) => {
           : user.role;
       const role_check = req.body.role === is_management;
       if (result && role_check) {
+        let status_update=await User.findOneAndUpdate({
+          username:req.body.username
+        },
+        {
+          status:true
+        })
         res.status(200).json({
           response: "Logged in successfully",
           user,
@@ -83,22 +94,33 @@ const user_login = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
+  try{
   let pageno=parseInt(req.query.pageno)
   let skip_page=pageno*10;
   const user = await User.find({ userId: parseInt(req.query.userId) }).skip(skip_page).limit(10);
   let get_count=await User.find({userId:parseInt(req.query.userId)}).countDocuments();
   return res.status(200).json({ data: user,count:get_count });
+  }
+  catch(err){
+    console.error("Error",err)
+  }
 };
 
 const getAllUser = async (req, res) => {
+  try{
   let pageno=parseInt(req.query.pageno)
   let skip_page=pageno*10;
   const user = await User.find().skip(skip_page).limit(10);
   let get_count=await User.find().countDocuments();
   return res.status(200).json({ data: user,count:get_count });
+  }
+  catch(err){
+    console.error("Error",err)
+  }
 };
 
 const addAgent = async (req, res) => {  
+  try{
   const userId=   await getNextSequenceValue("userId");
   let  username=req.body.username
   
@@ -114,19 +136,34 @@ const addAgent = async (req, res) => {
       });
    
       return res.status(200).json(user); 
+    }
+    catch(err){
+      console.error("Error",err)
+    }
 };
 
 const getAgent = async (req, res) => {
+  try{
   const user = await User.findOne({ agentId:req.query.agentId})
-  res.status(200).json({data:user})
+  res.status(200).json({data:user});
+  }
+  catch(err){
+    console.error("Error",err)
+  }
 };
 
 const getAllUsers = async (req, res) => {
+  try{
   const user = await User.find({ referralId:req.query.referralId})
-  res.status(200).json({data:user})
+  res.status(200).json({data:user});
+  }
+  catch(err){
+    console.error("Error",err)
+  }
 };
 
 const updateUser=async (req,res)=>{
+  try{
   const user = await User.updateOne({
     userId:req.query.userId
   },{
@@ -138,15 +175,23 @@ const updateUser=async (req,res)=>{
   });
 
   return res.status(200).json({response:"updated successfully"});
+}catch(err){
+  console.error("Error",err)
+}
 }
 
 const SearchUser=async (req,res)=>{
+  try{
   let arr=[];
 let searchUser=await User.findOne({
 username:req.query.username
 })
 arr.push(searchUser)
 return res.status(200).json({response:"Got data successfully",data:arr})
+  }
+  catch(err){
+    console.error("Error",err)
+  }
 }
 
 async function getNextSequenceValue(sequenceName) {
