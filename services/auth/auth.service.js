@@ -117,8 +117,8 @@ const getAllUser = async (req, res) => {
   try{
   let pageno=parseInt(req.query.pageno)
   let skip_page=pageno*10;
-  const user = await User.find().skip(skip_page).limit(10);
-  let get_count=await User.find().countDocuments();
+  const user = await User.find({role:"user"}).skip(skip_page).limit(10);
+  let get_count=await User.find({role:"user"}).countDocuments();
   return res.status(200).json({ data: user,count:get_count });
   }
   catch(err){
