@@ -338,8 +338,7 @@ const getTickets = async (req, res) => {
         },
       },
   ])
-    .skip(skip_page)
-    .limit(10);
+   
     
   let ticket_count = await Ticket.find({
     userId: req.query.userId,
