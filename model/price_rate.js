@@ -7,5 +7,5 @@ const priceratechema = Schema({
     default:null
    }
 });
-const pricerate = mongoose.model('ticketrate', priceratechema);
+const pricerate = mongoose.model('pricerate', priceratechema);
 module.exports = pricerate
