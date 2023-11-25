@@ -317,15 +317,15 @@ const getTickets = async (req, res) => {
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
   let end_date = new Date(date.setHours(date.getHours() + 24));
-  let get_tickets = await Ticket.aggregate([
-    {$match:{userId: req.query.userId}},
-    {$match:{ CreatedAt: {
+  let get_tickets = await Ticket.find({
+    userId: req.query.userId,
+    CreatedAt: {
       $gt: start_date,
       $lt: end_date,
     },
-            }
-    }
-  ])
+            
+    
+                                      })
    
     
   let ticket_count = await Ticket.find({
