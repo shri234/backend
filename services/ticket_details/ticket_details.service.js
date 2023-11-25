@@ -324,14 +324,7 @@ const getTickets = async (req, res) => {
       $lt: end_date,
     },
             }
-    },
-      {
-        $addFields: {
-          newField: {
-            $range: [1, { $size: { $objectToArray: '$$ROOT' } + 1 }],
-          },
-        },
-      },
+    }
   ])
    
     
