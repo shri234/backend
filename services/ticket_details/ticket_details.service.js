@@ -319,10 +319,11 @@ const getTickets = async (req, res) => {
       $gt: start_date,
       $lt: end_date,
     },
-  })
-    .skip(skip_page)
-    .limit(10);
-
+            
+    
+                                      })
+   
+    
   let ticket_count = await Ticket.find({
     userId: req.query.userId,
     CreatedAt: {
@@ -354,6 +355,7 @@ const publish_result = async (req, res) => {
   let pricerate_2;
   let pricerate2;
   let t = 0;
+
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
   let end_date = new Date(date.setHours(date.getHours() + 24));
@@ -369,7 +371,10 @@ const publish_result = async (req, res) => {
     $gt: start_date,
     $lt: end_date,
   },});
+  
+
   console.log(price_rate.priceRate_splitup);
+ 
   for (let i = 0; i < ticket_data.length; i++) {
     userid = ticket_data[i].userId;
 
@@ -381,16 +386,20 @@ const publish_result = async (req, res) => {
           if(price_rate!=null){
            let pricerate11=price_rate.priceRate_splitup
             pricerate_1=Array.from(pricerate11)
-            pricerate1=pricerate_1[0]*ticket_rate.ticketRate
+            console.log(pricerate_1)
+            pricerate1=parseInt(pricerate_1[0])*parseInt(ticket_rate.ticketRate)
           }
           console.log(pricerate1);
+          console.log(typeof pricerate1)
+          console.log(ticket_data[i].userId)
           let wallet_find=await Wallet.findOne({
             userId:parseInt(ticket_data[i].userId)
           })
+          console.log(typeof wallet_find.amount)
           let addon_wallet=await Wallet.findOneAndUpdate({
             userId:parseInt(ticket_data[i].userId)
           },{
-            walletAmount:wallet_find.walletAmount+pricerate1
+            amount:wallet_find.amount+pricerate1
           })
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
@@ -649,13 +658,16 @@ const getWalletHistory=async(req,res)=>{
   let pageno=req.query.pageno
   let skip_page=pageno*10;
   let arr=[];
+  let a=0;
   let all_data={};
   try{
   let get_wallet=await WalletHistory.find({
     userId:parseInt(req.query.userId)
   }).skip(skip_page).limit(10);
   for(let i=0;i<get_wallet.length;i++){
+    a+=1
     all_data={
+      number:a,
       CreatedAt:moment(get_wallet[i].CreatedAt).format("YYYY-MM-DD"),
       amount:get_wallet[i].amount
     }

@@ -4,7 +4,6 @@ const User = require("../../model/User");
 const Counter = require("../../model/Counter");
 const crypto=require("crypto");
 const nodemailer=require("nodemailer")
-
 const algorithm = 'aes-256-cbc'; //Using AES encryption
 const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
@@ -29,6 +28,9 @@ const addUser = async (req, res) => {
 
   return res.status(200).json({data:user});
 }
+    else{
+      return res.status(500).json("User already exists");
+    }
 }
 catch(err){
   console.error("Error",err)
@@ -203,16 +205,16 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'sriramm0406@gmail.com',
-    pass: '7639706001sS',
+    pass: 'ttgh zglc upom pktv',
   },
 });
 
-async function Sendmail(){
+const Sendmail= async (req,res)=>{
   const mailOptions = {
     from: 'sriramm0406@gmail.com',
-    to: 'karthikmsc2k17@gmail.com',
-    subject: 'Test Email',
-    text: 'This is a test email from Nodemailer.',
+    to: req.body.email,
+    subject: 'Request Email',
+    text: req.body.fullname+req.body.message
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
