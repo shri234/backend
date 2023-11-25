@@ -4,7 +4,6 @@ const User = require("../../model/User");
 const Counter = require("../../model/Counter");
 const crypto=require("crypto");
 const nodemailer=require("nodemailer")
-
 const algorithm = 'aes-256-cbc'; //Using AES encryption
 const key = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
@@ -29,6 +28,9 @@ const addUser = async (req, res) => {
 
   return res.status(200).json({data:user});
 }
+    else{
+      return res.status(500).json("User already exists");
+    }
 }
 catch(err){
   console.error("Error",err)
