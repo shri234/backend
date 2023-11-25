@@ -366,7 +366,7 @@ const publish_result = async (req, res) => {
             ticketId:ticket_data[i].ticketId
           },{
             "ticket.0.status":true
-          })
+          });
           // let status_update=await Ticket.findOneAndUpdate({
           //     ticketId:ticket_data[i].ticketId,
           // },{
@@ -396,6 +396,7 @@ const publish_result = async (req, res) => {
         }
         }
       } else if (j == 3) {
+        console.log(ticket_data[i].ticket[3],req.body[3].digit)
         if (ticket_data[i].ticket[3].digit == req.body[3].digit) {
           fourthdigit = req.body[3].digit;
           if(thirddigit!=undefined){
@@ -644,6 +645,23 @@ const getWallet=async(req,res)=>{
   return res.status(200).json({data:get_wallet});
 }
 
+const getWinner=async(req,res)=>{
+  let all_data={};
+  let user_find;
+  let get_wallet=await Ticket.find({});
+  for(let i=0;i<get_wallet.length;i++){
+    console.log(get_wallet[i])
+    if(get_wallet[i].ticket[0].status=="true" && get_wallet[i].ticket[1].status=="true" && get_wallet[i].ticket[2].status=="true" && get_wallet[i].ticket[3].status=="true"){
+      console.log("inside")
+      user_find=await User.findOne({
+        userId:get_wallet[i].userId
+      });
+    }
+  }
+
+  return res.status(200).json({data:user_find.username});
+}
+
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
@@ -665,5 +683,6 @@ module.exports = {
   addWalletAmount,
   getWalletHistory,
   getWallet,
-  addWallettAmount
+  addWallettAmount,
+  getWinner
 };
