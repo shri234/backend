@@ -419,12 +419,13 @@ const publish_result = async (req, res) => {
         }
       } else if (j == 1) {
         if (ticket_data[i].ticket[1].digit == req.body[1].digit) {
-          seconddigit = req.body[1].digit;
-          if(firstdigit!=undefined){
+          
+          if(firstdigit){
+            seconddigit = req.body[1].digit;
             if(price_rate!=null){
               let pricerate12=price_rate.priceRate_splitup
                pricerate_2=Array.from(pricerate12)
-               pricerate2=pricerate_2[0]*ticket_rate.ticketRate
+               pricerate2=parseInt(pricerate_2[1])*parseInt(ticket_rate.ticketRate)
              }
              console.log(pricerate2)
              let wallet_find=await Wallet.findOne({
@@ -445,13 +446,14 @@ const publish_result = async (req, res) => {
         }
       } else if (j == 2) {
         if (ticket_data[i].ticket[2].digit == req.body[2].digit) {
-          
-          if(seconddigit!=undefined){
-            thirddigit = req.body[2].digit;
+
+     
+          if(seconddigit){
+                 thirddigit = req.body[2].digit;
             if(price_rate!=null){
               let pricerate13=price_rate.priceRate_splitup
                pricerate_3=Array.from(pricerate13)
-               pricerate3=pricerate_3[0]*ticket_rate.ticketRate
+               pricerate3=parseInt(pricerate_3[2])*parseInt(ticket_rate.ticketRate)
              }
              console.log(pricerate3)
              let wallet_find=await Wallet.findOne({
@@ -473,7 +475,9 @@ const publish_result = async (req, res) => {
       } else if (j == 3) {
         if (ticket_data[i].ticket[3].digit == req.body[3].digit) {
           
-          if(thirddigit!=undefined){
+
+          if(thirddigit){
+
             fourthdigit = req.body[3].digit;
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
@@ -514,7 +518,6 @@ const publish_result = async (req, res) => {
     .status(200)
     .json({ response: "Published result successfully", Winners: t });
 };
-
 
 const getHistories = async (req, res) => {
   try{
@@ -639,6 +642,14 @@ if(wallet_find!=null){
   },{
     amount:wallet_find.amount+parseInt(req.body.amount)
   });
+  let wallet_history=await WalletHistory.create(
+    {
+      amount:parseInt(req.body.amount),
+      userId:parseInt(req.body.userId),
+      username:req.body.username,
+      CreatedAt:date
+    }
+  )
 }
 else{
   add_amount=await Wallet.create({
@@ -647,7 +658,9 @@ else{
     username:req.body.username,
     CreatedAt:date
   });
-   let wallet_history=await WalletHistory.create(
+
+  let wallet_history=await WalletHistory.create(
+
     {
       amount:parseInt(req.body.amount),
       userId:parseInt(req.body.userId),
@@ -733,6 +746,7 @@ const getWallet=async(req,res)=>{
 }
 
 const getWinner=async(req,res)=>{
+  try{
   let all_data={};
   let user_find;
   let get_wallet=await Ticket.find({});
@@ -746,6 +760,10 @@ const getWinner=async(req,res)=>{
   }
 
   return res.status(200).json({data:user_find.username});
+  }
+  catch(err){
+    console.error("Error")
+  }
 }
 
 const updatePriceRate=async(req,res) =>{
