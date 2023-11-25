@@ -621,7 +621,7 @@ const getWalletHistory=async(req,res)=>{
   for(let i=0;i<get_wallet.length;i++){
     a+=1
     all_data={
-      sno:a
+      number:a,
       CreatedAt:moment(get_wallet[i].CreatedAt).format("YYYY-MM-DD"),
       amount:get_wallet[i].amount
     }
