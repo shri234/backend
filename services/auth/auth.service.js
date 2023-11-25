@@ -212,9 +212,9 @@ const transporter = nodemailer.createTransport({
 const Sendmail= async (req,res)=>{
   const mailOptions = {
     from: 'sriramm0406@gmail.com',
-    to: 'karthikmsc2k17@gmail.com',
-    subject: 'Test Email',
-    text: 'This is a test email from Nodemailer.',
+    to: req.body.email,
+    subject: 'Request Email',
+    text: req.body.fullname+req.body.message
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
