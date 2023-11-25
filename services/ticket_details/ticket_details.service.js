@@ -8,6 +8,7 @@ const TicketRate = require("../../model/ticket_rate");
 const moment = require("moment");
 const WalletHistory=require("../../model/wallet_history");
 const Wallet=require("../../model/wallet")
+const Result=require("../../model/result")
 const PriceRate=require("../../model/price_rate")
 
 
@@ -377,6 +378,9 @@ const publish_result = async (req, res) => {
     $gt: start_date,
     $lt: date
   },});
+  let result_add=await Result.create({
+    result_ticket:req.body[0].digit+req.body[1].digit+req.body[2].digit+req.body[3].digit
+  })
   
 
   console.log(price_rate.priceRate_splitup);
@@ -498,7 +502,7 @@ const publish_result = async (req, res) => {
       String(seconddigit) +
       String(thirddigit) +
       String(fourthdigit);
-      
+    
     let history_update = await History.findOneAndUpdate(
       {
         userId: userid,
