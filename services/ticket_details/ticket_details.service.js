@@ -516,7 +516,15 @@ const publish_result = async (req, res) => {
           });
         }
         }
+        else{
+            let ticket_update=await Ticket.findOneAndUpdate({
+            ticketId:ticket_data[i].ticketId
+          },{
+            "ticket.3.status":false
+          });
+        }
       }
+      
     }
   }
   console.log(firstdigit, seconddigit, thirddigit, fourthdigit);
