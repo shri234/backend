@@ -354,6 +354,8 @@ const publish_result = async (req, res) => {
   let pricerate1;
   let pricerate_2;
   let pricerate2;
+  let pricerate_3;
+  let pricerate3;
   let t = 0;
 
   let start_date = new Date(req.query.date);
@@ -426,6 +428,15 @@ const publish_result = async (req, res) => {
                pricerate2=pricerate_2[0]*ticket_rate.ticketRate
              }
              console.log(pricerate2)
+             let wallet_find=await Wallet.findOne({
+              userId:parseInt(ticket_data[i].userId)
+            })
+            console.log(typeof wallet_find.amount)
+            let addon_wallet=await Wallet.findOneAndUpdate({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              amount:wallet_find.amount+pricerate2
+            })
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
@@ -437,6 +448,21 @@ const publish_result = async (req, res) => {
         if (ticket_data[i].ticket[2].digit == req.body[2].digit) {
           thirddigit = req.body[2].digit;
           if(seconddigit!=undefined){
+            if(price_rate!=null){
+              let pricerate13=price_rate.priceRate_splitup
+               pricerate_3=Array.from(pricerate13)
+               pricerate3=pricerate_3[0]*ticket_rate.ticketRate
+             }
+             console.log(pricerate3)
+             let wallet_find=await Wallet.findOne({
+              userId:parseInt(ticket_data[i].userId)
+            })
+            console.log(typeof wallet_find.amount)
+            let addon_wallet=await Wallet.findOneAndUpdate({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              amount:wallet_find.amount+pricerate3
+            })
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
@@ -488,7 +514,6 @@ const publish_result = async (req, res) => {
     .status(200)
     .json({ response: "Published result successfully", Winners: t });
 };
-
 
 const getHistories = async (req, res) => {
   try{
