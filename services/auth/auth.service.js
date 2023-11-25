@@ -209,7 +209,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function Sendmail(){
+const Sendmail= async (req,res)=>{
   const mailOptions = {
     from: 'sriramm0406@gmail.com',
     to: 'karthikmsc2k17@gmail.com',
