@@ -475,8 +475,9 @@ const publish_result = async (req, res) => {
       } else if (j == 3) {
         console.log(ticket_data[i].ticket[3],req.body[3].digit)
         if (ticket_data[i].ticket[3].digit == req.body[3].digit) {
-          fourthdigit = req.body[3].digit;
+          
           if(thirddigit){
+            fourthdigit = req.body[3].digit;
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
