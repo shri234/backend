@@ -359,8 +359,8 @@ const publish_result = async (req, res) => {
   let pricerate3;
   let t = 0;
   let date1=new Date()
-  let start_date1=new Date(date.setHours(date.getHours()+5))
-  new Date(date.setMinutes(date.getMinutes()+30))
+  let start_date1=new Date(date1.setHours(date1.getHours()+5))
+  new Date(date1.setMinutes(date1.getMinutes()+30))
 
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
