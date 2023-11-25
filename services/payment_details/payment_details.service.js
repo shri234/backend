@@ -150,6 +150,8 @@ const deleteRedeemHistory=async (req,res)=>{
 const updateRedeemHistory=async (req,res)=>{
   let delete_one=await RedeemHistory.updateOne({
     redeemId:req.query.redeemId
+  },{
+  status:true
   });
   return res.status(200).json({response:"Deleted successfully"});
 }
