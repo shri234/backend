@@ -325,10 +325,11 @@ const getTickets = async (req, res) => {
     },
             }
     },
-     {
+      {
         $addFields: {
-          // Create a new field 'newField' and increment its value based on the length of the document
-          newField: { $add: ['$counter', { $size: { $objectToArray: '$$ROOT' } }] },
+          newField: {
+            $range: [1, { $size: { $objectToArray: '$$ROOT' } + 1 }],
+          },
         },
       },
   ])
