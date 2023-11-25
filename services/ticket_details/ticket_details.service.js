@@ -612,13 +612,16 @@ const getWalletHistory=async(req,res)=>{
   let pageno=req.query.pageno
   let skip_page=pageno*10;
   let arr=[];
+  let a=0;
   let all_data={};
   try{
   let get_wallet=await WalletHistory.find({
     userId:parseInt(req.query.userId)
   }).skip(skip_page).limit(10);
   for(let i=0;i<get_wallet.length;i++){
+    a+=1
     all_data={
+      sno:a
       CreatedAt:moment(get_wallet[i].CreatedAt).format("YYYY-MM-DD"),
       amount:get_wallet[i].amount
     }
