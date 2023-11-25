@@ -317,16 +317,30 @@ const getTickets = async (req, res) => {
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
   let end_date = new Date(date.setHours(date.getHours() + 24));
-  let get_tickets = await Ticket.find({
-    userId: req.query.userId,
-    CreatedAt: {
+  let get_tickets = await Ticket.aggregate([
+    {$match:{userId: req.query.userId}},
+    {$match:{ CreatedAt: {
       $gt: start_date,
       $lt: end_date,
     },
-  })
+            }
+    },
+     {
+        $project: {
+          documentLength: { $size: { $objectToArray: '$$ROOT' } }, // Calculate the length of the document
+          // Add other fields you want to retain in the projection
+        },
+      },
+      {
+        $addFields: {
+          // Increment a specific field (e.g., 'counter') based on the document length
+          counter: { $add: ['$counter', '$documentLength'] },
+        },
+      },
+  ])
     .skip(skip_page)
     .limit(10);
-
+    
   let ticket_count = await Ticket.find({
     userId: req.query.userId,
     CreatedAt: {
