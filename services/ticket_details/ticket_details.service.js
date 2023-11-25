@@ -388,12 +388,11 @@ const publish_result = async (req, res) => {
       if (j == 0) {
         if (ticket_data[i].ticket[0].digit == req.body[0].digit) {
           firstdigit = req.body[0].digit;
-          
           if(price_rate!=null){
            let pricerate11=price_rate.priceRate_splitup
-            pricerate_1=Array.from(pricerate11)
-            console.log(pricerate_1)
-            pricerate1=parseInt(pricerate_1[0])*parseInt(ticket_rate.ticketRate)
+            pricerate_1=Array.from(pricerate11);
+            console.log(pricerate_1);
+            pricerate1=parseInt(pricerate_1[0])*parseInt(ticket_rate.ticketRate);
           }
           console.log(pricerate1);
           console.log(typeof pricerate1)
@@ -447,6 +446,7 @@ const publish_result = async (req, res) => {
         }
       } else if (j == 2) {
         if (ticket_data[i].ticket[2].digit == req.body[2].digit) {
+
      
           if(seconddigit){
                  thirddigit = req.body[2].digit;
@@ -473,10 +473,11 @@ const publish_result = async (req, res) => {
         }
         }
       } else if (j == 3) {
-        console.log(ticket_data[i].ticket[3],req.body[3].digit)
         if (ticket_data[i].ticket[3].digit == req.body[3].digit) {
           
+
           if(thirddigit){
+
             fourthdigit = req.body[3].digit;
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
@@ -657,7 +658,9 @@ else{
     username:req.body.username,
     CreatedAt:date
   });
+
   let wallet_history=await WalletHistory.create(
+
     {
       amount:parseInt(req.body.amount),
       userId:parseInt(req.body.userId),
