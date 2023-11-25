@@ -15,12 +15,7 @@ const addTicketDaily = async (req, res) => {
   try {
     let date = new Date();
     const ticketId = await getNextSequenceValue("ticketId");
-    let ticket_count = await TicketRate.find({
-      CreatedAt: {
-        $gt: new Date(date.setDate(date.getDate())),
-        $lt: new Date(date.setDate(date.getDate() + 1)),
-      },
-    });
+  
     let user_find = await User.findOne({
       userId: parseInt(req.body.userId),
     });
@@ -34,7 +29,7 @@ const addTicketDaily = async (req, res) => {
     
 let wallet_u=await Wallet.findOne({
   userId:parseInt(req.body.userId)
-})
+});
 if(wallet_u.ticketCount>0){
     let wallet_update=await Wallet.updateOne({
       userId:parseInt(req.body.userId)
@@ -53,7 +48,7 @@ if(wallet_u.ticketCount>0){
     });
   }
   else{
-    console.log("tickets you have bought is complete please buy more");
+    console.log("tickets you have bought is over please buy more and try");
   }
 
     const id = await getNextSequenceValue("id");
@@ -360,13 +355,26 @@ const publish_result = async (req, res) => {
   let pricerate_2;
   let pricerate2;
   let t = 0;
+
+  let start_date = new Date(req.query.date);
+  let date = new Date(req.query.date);
+  let end_date = new Date(date.setHours(date.getHours() + 24));
+  let ticket_data = await Ticket.find({ CreatedAt: {
+    $gt: start_date,
+    $lt: end_date,
+  },});
+  let price_rate=await PriceRate.findOne({ CreatedAt: {
+    $gt: start_date,
+    $lt: end_date,
+  },});
+  let ticket_rate=await TicketRate.findOne({ CreatedAt: {
+    $gt: start_date,
+    $lt: end_date,
+  },});
   
-  let ticket_data = await Ticket.find({});
-  let price_rate=await PriceRate.findOne({});
-  let ticket_rate=await TicketRate.findOne({});
-  let ticket_find=await TicketRate.find({});
+
   console.log(price_rate.priceRate_splitup);
-  console.log(ticket_rate,ticket_find)
+ 
   for (let i = 0; i < ticket_data.length; i++) {
     userid = ticket_data[i].userId;
 
@@ -693,7 +701,6 @@ const getWinner=async(req,res)=>{
   for(let i=0;i<get_wallet.length;i++){
     console.log(get_wallet[i])
     if(get_wallet[i].ticket[0].status=="true" && get_wallet[i].ticket[1].status=="true" && get_wallet[i].ticket[2].status=="true" && get_wallet[i].ticket[3].status=="true"){
-      console.log("inside")
       user_find=await User.findOne({
         userId:get_wallet[i].userId
       });
@@ -705,8 +712,12 @@ const getWinner=async(req,res)=>{
 
 const updatePriceRate=async(req,res) =>{
 try{
+  let date=new Date()
+  let start_date=new Date(date.setHours(date.getHours()+5))
+  new Date(date.setMinutes(date.getMinutes()+30))
   let update_rate=await PriceRate.create({
-    priceRate_splitup:req.body.splitup
+    priceRate_splitup:req.body.splitup,
+    CreatedAt:date
   });
   res.status(200).json("created successfully")
 }
