@@ -8,6 +8,7 @@ const TicketRate = require("../../model/ticket_rate");
 const moment = require("moment");
 const WalletHistory=require("../../model/wallet_history");
 const Wallet=require("../../model/wallet")
+const PriceRate=require("../../model/price_rate")
 
 
 const addTicketDaily = async (req, res) => {
@@ -353,15 +354,38 @@ const publish_result = async (req, res) => {
   let seconddigit;
   let thirddigit;
   let fourthdigit;
+  let pricerate_1;
+  let pricerate1;
+  let pricerate_2;
+  let pricerate2;
   let t = 0;
-
+  
   let ticket_data = await Ticket.find({});
+  let price_rate=await PriceRate.findOne({});
+  let ticket_rate=await TicketRate.findOne({});
+  console.log(price_rate.priceRate_splitup);
   for (let i = 0; i < ticket_data.length; i++) {
     userid = ticket_data[i].userId;
+
     for (let j = 0; j < 4; j++) {
       if (j == 0) {
         if (ticket_data[i].ticket[0].digit == req.body[0].digit) {
           firstdigit = req.body[0].digit;
+          
+          if(price_rate!=null){
+           let pricerate11=price_rate.priceRate_splitup
+            pricerate_1=Array.from(pricerate11)
+            pricerate1=pricerate_1[0]*ticket_rate.ticketRate
+          }
+          console.log(pricerate1);
+          let wallet_find=await Wallet.findOne({
+            userId:parseInt(ticket_data[i].userId)
+          })
+          let addon_wallet=await Wallet.findOneAndUpdate({
+            userId:parseInt(ticket_data[i].userId)
+          },{
+            walletAmount:wallet_find.walletAmount+pricerate1
+          })
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
@@ -377,6 +401,12 @@ const publish_result = async (req, res) => {
         if (ticket_data[i].ticket[1].digit == req.body[1].digit) {
           seconddigit = req.body[1].digit;
           if(firstdigit!=undefined){
+            if(price_rate!=null){
+              let pricerate12=price_rate.priceRate_splitup
+               pricerate_2=Array.from(pricerate12)
+               pricerate2=pricerate_2[0]*ticket_rate.ticketRate
+             }
+             console.log(pricerate2)
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
@@ -439,6 +469,7 @@ const publish_result = async (req, res) => {
     .status(200)
     .json({ response: "Published result successfully", Winners: t });
 };
+
 
 const getHistories = async (req, res) => {
   try{
@@ -662,6 +693,19 @@ const getWinner=async(req,res)=>{
   return res.status(200).json({data:user_find.username});
 }
 
+const updatePriceRate=async(req,res) =>{
+try{
+  let update_rate=await PriceRate.create({
+    priceRate_splitup:req.body.splitup
+  });
+  res.status(200).json("created successfully")
+}
+catch(error){
+  console.log(error);
+}
+
+}
+
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
@@ -684,5 +728,6 @@ module.exports = {
   getWalletHistory,
   getWallet,
   addWallettAmount,
-  getWinner
+  getWinner,
+  updatePriceRate
 };
