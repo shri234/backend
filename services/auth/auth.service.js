@@ -11,7 +11,11 @@ const iv = crypto.randomBytes(16);
 const addUser = async (req, res) => {
   try{
   const userId = await getNextSequenceValue("userId");
-  // let password=encrypt(req.body.password);
+  let user_find=await User.findOne({
+    username:req.body.username
+  });
+
+  if(user_find == undefined){
   const user = await User.create({
     username: req.body.username,
     password:  req.body.password,
@@ -21,9 +25,9 @@ const addUser = async (req, res) => {
     mobileNumber: req.body.mobileNumber,
     referralId: req.body.referralId,
   });
-  console.log(user.userId);
 
   return res.status(200).json({data:user});
+}
 }
 catch(err){
   console.error("Error",err)
