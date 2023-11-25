@@ -417,7 +417,7 @@ const publish_result = async (req, res) => {
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
-            "ticket.0.status":true
+            "ticket.0.status":"true"
           });
           // let status_update=await Ticket.findOneAndUpdate({
           //     ticketId:ticket_data[i].ticketId,
@@ -429,7 +429,7 @@ const publish_result = async (req, res) => {
   let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
           },{
-            "ticket.0.status":false
+            "ticket.0.status":"false"
           });
           
         }
