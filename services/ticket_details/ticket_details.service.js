@@ -420,8 +420,9 @@ const publish_result = async (req, res) => {
         }
       } else if (j == 1) {
         if (ticket_data[i].ticket[1].digit == req.body[1].digit) {
-          seconddigit = req.body[1].digit;
+          
           if(firstdigit){
+            seconddigit = req.body[1].digit;
             if(price_rate!=null){
               let pricerate12=price_rate.priceRate_splitup
                pricerate_2=Array.from(pricerate12)
@@ -446,8 +447,9 @@ const publish_result = async (req, res) => {
         }
       } else if (j == 2) {
         if (ticket_data[i].ticket[2].digit == req.body[2].digit) {
-          thirddigit = req.body[2].digit;
+     
           if(seconddigit){
+                 thirddigit = req.body[2].digit;
             if(price_rate!=null){
               let pricerate13=price_rate.priceRate_splitup
                pricerate_3=Array.from(pricerate13)
