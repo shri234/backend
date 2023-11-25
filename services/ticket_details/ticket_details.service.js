@@ -425,6 +425,14 @@ const publish_result = async (req, res) => {
           //     status:"true"
           // });
         }
+        else{
+  let ticket_update=await Ticket.findOneAndUpdate({
+            ticketId:ticket_data[i].ticketId
+          },{
+            "ticket.0.status":false
+          });
+          
+        }
       } else if (j == 1) {
         if (ticket_data[i].ticket[1].digit == req.body[1].digit) {
           
@@ -451,6 +459,13 @@ const publish_result = async (req, res) => {
             "ticket.1.status":true
           })
         }
+        }
+        else{
+            let ticket_update=await Ticket.findOneAndUpdate({
+            ticketId:ticket_data[i].ticketId
+          },{
+            "ticket.1.status":false
+          });
         }
       } else if (j == 2) {
         if (ticket_data[i].ticket[2].digit == req.body[2].digit) {
@@ -479,6 +494,13 @@ const publish_result = async (req, res) => {
             "ticket.2.status":true
           })
         }
+        }
+        else{
+            let ticket_update=await Ticket.findOneAndUpdate({
+            ticketId:ticket_data[i].ticketId
+          },{
+            "ticket.2.status":false
+          });
         }
       } else if (j == 3) {
         if (ticket_data[i].ticket[3].digit == req.body[3].digit) {
