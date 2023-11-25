@@ -364,7 +364,9 @@ const publish_result = async (req, res) => {
   let ticket_data = await Ticket.find({});
   let price_rate=await PriceRate.findOne({});
   let ticket_rate=await TicketRate.findOne({});
+  let ticket_find=await TicketRate.find({});
   console.log(price_rate.priceRate_splitup);
+  console.log(ticket_rate,ticket_find)
   for (let i = 0; i < ticket_data.length; i++) {
     userid = ticket_data[i].userId;
 
