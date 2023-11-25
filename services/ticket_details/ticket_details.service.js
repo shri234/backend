@@ -715,6 +715,7 @@ const getWallet=async(req,res)=>{
 }
 
 const getWinner=async(req,res)=>{
+  try{
   let all_data={};
   let user_find;
   let get_wallet=await Ticket.find({});
@@ -728,6 +729,10 @@ const getWinner=async(req,res)=>{
   }
 
   return res.status(200).json({data:user_find.username});
+  }
+  catch(err){
+    console.error("Error")
+  }
 }
 
 const updatePriceRate=async(req,res) =>{
