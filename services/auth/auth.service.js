@@ -193,7 +193,12 @@ const SearchUser=async (req,res)=>{
 let searchUser=await User.findOne({
 username:req.query.username
 })
+    if(searchUser==null){
+      
+    }
+    else{
 arr.push(searchUser)
+    }
 return res.status(200).json({response:"Got data successfully",data:arr})
   }
   catch(err){
