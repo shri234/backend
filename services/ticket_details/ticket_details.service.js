@@ -382,6 +382,7 @@ const publish_result = async (req, res) => {
             pricerate1=parseInt(pricerate_1[0])*parseInt(ticket_rate.ticketRate)
           }
           console.log(pricerate1);
+          console.log(typeof pricerate1)
           console.log(ticket_data[i].userId)
           let wallet_find=await Wallet.findOne({
             userId:parseInt(ticket_data[i].userId)
