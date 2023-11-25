@@ -6,7 +6,8 @@ const RedeemHistory=require("../../model/redeem_history");
 const crypto = require('crypto');
 const Razorpay=require('razorpay');
 const Counter=require("../../model/Counter")
-const moment=require('moment')
+const moment=require('moment');
+const wallet = require('../../model/wallet');
 
 const addPaymentDetails = async (req, res) => {  
   // const secret="BLUESTOCKSINVESTMENT"
@@ -98,6 +99,15 @@ const redeemHistory=async (req,res)=>{
     username:req.body.username,
     amount:req.body.amount
   });
+  let wallet_find=await wallet.findOne({
+    userId:req.body.userId
+  })
+  let wallet_redeem=await wallet.findOneAndUpdate({
+    userId:req.body.userId,
+  },
+  {
+    amount:wallet_find.amount-parseInt(req.body.amount)
+  })
   return res.status(200).json({response:"Data Inserted successfully"});
 }
 catch(err){
@@ -130,6 +140,20 @@ const getRedeemHistory=async (req,res)=>{
 }
 }
 
+const deleteRedeemHistory=async (req,res)=>{
+  let delete_one=await RedeemHistory.deleteOne({
+    redeemId:req.query.redeemId
+  });
+  return res.status(200).json({response:"Deleted successfully"});
+}
+
+const updateRedeemHistory=async (req,res)=>{
+  let delete_one=await RedeemHistory.updateOne({
+    redeemId:req.query.redeemId
+  });
+  return res.status(200).json({response:"Deleted successfully"});
+}
+
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
     { _id:sequenceName},
@@ -145,7 +169,9 @@ module.exports = {
     get_paymentdetails,
     paymentVerification,
     redeemHistory,
-    getRedeemHistory
+    getRedeemHistory,
+    deleteRedeemHistory,
+    updateRedeemHistory
 }
 
 
