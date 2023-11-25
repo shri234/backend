@@ -376,6 +376,7 @@ const publish_result = async (req, res) => {
           if(price_rate!=null){
            let pricerate11=price_rate.priceRate_splitup
             pricerate_1=Array.from(pricerate11)
+            console.log(pricerate_1)
             pricerate1=pricerate_1[0]*ticket_rate.ticketRate
           }
           console.log(pricerate1);
