@@ -2,7 +2,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../../model/User");
 const Counter = require("../../model/Counter");
-const crypto=require("crypto")
+const crypto=require("crypto");
+const nodemailer=require("nodemailer")
 
 const algorithm = 'aes-256-cbc'; //Using AES encryption
 const key = crypto.randomBytes(32);
@@ -198,6 +199,30 @@ return res.status(200).json({response:"Got data successfully",data:arr})
   }
 }
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'sriramm0406@gmail.com',
+    pass: '7639706001sS',
+  },
+});
+
+async function Sendmail(){
+  const mailOptions = {
+    from: 'sriramm0406@gmail.com',
+    to: 'karthikmsc2k17@gmail.com',
+    subject: 'Test Email',
+    text: 'This is a test email from Nodemailer.',
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return res.status(500).send(error.toString());
+    }
+    res.status(200).send('Email sent: ' + info.response);
+  });
+}
+
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
@@ -215,5 +240,5 @@ module.exports = {
   updateUser,getAgent,
   getAllUser,
   SearchUser,
-  getAllUsers
+  Sendmail
 };
