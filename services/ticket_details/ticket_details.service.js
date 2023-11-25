@@ -389,7 +389,7 @@ const publish_result = async (req, res) => {
           let addon_wallet=await Wallet.findOneAndUpdate({
             userId:parseInt(ticket_data[i].userId)
           },{
-            walletAmount:wallet_find.walletAmount+pricerate1
+            walletAmount:wallet_find.amount+pricerate1
           })
           let ticket_update=await Ticket.findOneAndUpdate({
             ticketId:ticket_data[i].ticketId
