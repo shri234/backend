@@ -613,6 +613,14 @@ if(wallet_find!=null){
   },{
     amount:wallet_find.amount+parseInt(req.body.amount)
   });
+  let wallet_history=await WalletHistory.create(
+    {
+      amount:parseInt(req.body.amount),
+      userId:parseInt(req.body.userId),
+      username:req.body.username,
+      CreatedAt:date
+    }
+  )
 }
 else{
   add_amount=await Wallet.create({
