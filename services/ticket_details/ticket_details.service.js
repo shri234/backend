@@ -365,15 +365,15 @@ const publish_result = async (req, res) => {
   console.log(start_date,end_date)
   let ticket_data = await Ticket.find({ CreatedAt: {
     $gt: start_date,
-    $lt: end_date,
+    $lt: date
   },});
   let price_rate=await PriceRate.findOne({ CreatedAt: {
     $gt: start_date,
-    $lt: end_date,
+    $lt: date
   },});
   let ticket_rate=await TicketRate.findOne({ CreatedAt: {
     $gt: start_date,
-    $lt: end_date,
+    $lt: date
   },});
   
 
