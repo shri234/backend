@@ -356,6 +356,9 @@ const publish_result = async (req, res) => {
   let t = 0;
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
+  start_date.setDate(start_date.getDate()-1)
+  start_date.setHours(17, 0, 0, 0);
+  console.log(start_date,end_date)
   let end_date = new Date(date.setHours(date.getHours() + 24));
   let ticket_data = await Ticket.find({ CreatedAt: {
     $gt: start_date,
