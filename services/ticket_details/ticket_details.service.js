@@ -326,15 +326,9 @@ const getTickets = async (req, res) => {
             }
     },
      {
-        $project: {
-          documentLength: { $size: { $objectToArray: '$$ROOT' } }, // Calculate the length of the document
-          // Add other fields you want to retain in the projection
-        },
-      },
-      {
         $addFields: {
-          // Increment a specific field (e.g., 'counter') based on the document length
-          counter: { $add: ['$counter', '$documentLength'] },
+          // Create a new field 'newField' and increment its value based on the length of the document
+          newField: { $add: ['$counter', { $size: { $objectToArray: '$$ROOT' } }] },
         },
       },
   ])
