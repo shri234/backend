@@ -621,6 +621,14 @@ else{
     username:req.body.username,
     CreatedAt:date
   });
+  let wallet_history=await WalletHistory.create(
+    {
+      amount:parseInt(req.body.amount),
+      userId:parseInt(req.body.userId),
+      username:req.body.username,
+      CreatedAt:date
+    }
+  )
 }
 return res.status(200).json({response:"Data inserted successfully"})
 }
