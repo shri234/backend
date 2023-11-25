@@ -377,7 +377,7 @@ const publish_result = async (req, res) => {
            let pricerate11=price_rate.priceRate_splitup
             pricerate_1=Array.from(pricerate11)
             console.log(pricerate_1)
-            pricerate1=pricerate_1[0]*ticket_rate.ticketRate
+            pricerate1=parseInt(pricerate_1[0])*parseInt(ticket_rate.ticketRate)
           }
           console.log(pricerate1);
           let wallet_find=await Wallet.findOne({
