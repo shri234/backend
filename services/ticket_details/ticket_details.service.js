@@ -358,6 +358,9 @@ const publish_result = async (req, res) => {
   let pricerate_3;
   let pricerate3;
   let t = 0;
+  let date1=new Date()
+  let start_date1=new Date(date.setHours(date.getHours()+5))
+  new Date(date.setMinutes(date.getMinutes()+30))
 
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
@@ -379,7 +382,8 @@ const publish_result = async (req, res) => {
     $lt: date
   },});
   let result_add=await Result.create({
-    result_ticket:req.body[0].digit+req.body[1].digit+req.body[2].digit+req.body[3].digit
+    result_ticket:req.body[0].digit+req.body[1].digit+req.body[2].digit+req.body[3].digit,
+    CreatedAt:date1
   })
   
 
@@ -787,6 +791,19 @@ catch(error){
 
 }
 
+const getResult=async (req,res)=>{
+  try{
+
+    let data_get=await Result.findOne({
+
+    })
+    res.status(200).json({response:"Got data successfully",data:data_get})
+  }
+  catch(error){
+    console.error(error)
+  }
+}
+
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
@@ -810,5 +827,7 @@ module.exports = {
   getWallet,
   addWallettAmount,
   getWinner,
-  updatePriceRate
+  updatePriceRate,
+  getResult
 };
+

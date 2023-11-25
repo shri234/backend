@@ -15,5 +15,6 @@ router.get('/getWallet',tickets.getWallet);
 router.post("/addWallet",tickets.addWallettAmount);
 router.get("/getWinner",tickets.getWinner);
 router.put("/updatePriceRate",tickets.updatePriceRate);
+router.get("/result",tickets.getResult);
 module.exports = router
 
