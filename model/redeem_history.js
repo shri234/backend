@@ -5,6 +5,10 @@ const Schema = mongoose.Schema
 // const AutoIncrement = require('mongoose-sequence')(mongoose); // Import the plugin
 
 let RedeemHistory = new Schema({ 
+    email:{
+      type:String,
+      default:null
+    },
     redeemId:{
         type:Number
     },
