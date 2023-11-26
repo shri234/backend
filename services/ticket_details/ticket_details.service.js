@@ -851,12 +851,15 @@ let pageno=req.query.pageno;
     let get_Histories=await History.find({
     }).skip(skip_page).limit(10);
      for (let i = 0; i < get_Histories.length; i++) {
+       let find_user=await User.findOne({
+       username:get_Histories[i].username
+       });
     let all_date = {
       CreatedAt: moment(get_Histories[i].CreatedAt).format("DD/MM/YYYY"),
       ticket: get_Histories[i].ticket,
       id: get_Histories[i].id,
       ticketCount: get_Histories[i].ticketCount,
-      username:get_Histories[i].username
+      username:get_Histories[i].username + `(${find_user.referralId})`
     };
     get_all.push(all_date);
   }
