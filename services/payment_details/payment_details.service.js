@@ -97,7 +97,8 @@ const redeemHistory=async (req,res)=>{
     redeemId:redeemId,
     userId:req.body.userId,
     username:req.body.username,
-    amount:req.body.amount
+    amount:req.body.amount,
+    email:req.body.email
   });
   let wallet_find=await wallet.findOne({
     userId:req.body.userId
@@ -120,16 +121,21 @@ const getRedeemHistory=async (req,res)=>{
   let pageno=req.query.pageno
   let skip_page=pageno*10
   let all=[];
+  
   const redeemHistory=await RedeemHistory.find({
     
   }).skip(skip_page).limit(10);
   for(let i=0;i<redeemHistory.length;i++){
+    let user_find=await User.findOne({
+      username:redeemHistory[i].username,
+    })
   let get_all={
     CreatedAt:moment(redeemHistory[i].CreatedAt).format("DD/MM/YYYY"),
     amount:redeemHistory[i].amount,
-    username:redeemHistory[i].username,
+    username:redeemHistory[i].username+`(${user_find.referralId})`,
     status:redeemHistory[i].status,
-    redeemId:redeemHistory[i].redeemId
+    redeemId:redeemHistory[i].redeemId,
+    email:redeemHistory[i].email
   }
   all.push(get_all);
 }
