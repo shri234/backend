@@ -648,6 +648,7 @@ const addWalletAmount=async(req,res)=>{
         amount:parseInt(req.body.amount),
         userId:parseInt(req.body.userId),
         username:req.body.username,
+        status:true,
         CreatedAt:date
       }
     )
@@ -664,6 +665,7 @@ const addWalletAmount=async(req,res)=>{
       amount:req.body.amount,
       userId:parseInt(req.body.userId),
       username:req.body.username,
+      status:true,
       CreatedAt:date
     }
   )
@@ -694,6 +696,7 @@ if(wallet_find!=null){
       amount:parseInt(req.body.amount),
       userId:parseInt(req.body.userId),
       username:req.body.username,
+      status:true,
       CreatedAt:date
     }
   )
@@ -712,6 +715,7 @@ else{
       amount:parseInt(req.body.amount),
       userId:parseInt(req.body.userId),
       username:req.body.username,
+      status:true,
       CreatedAt:date
     }
   )
