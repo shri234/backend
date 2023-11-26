@@ -843,6 +843,32 @@ const getResult=async (req,res)=>{
   }
 }
 
+const getHistorry=async (req,res)=>{
+  try{
+    let get_all=[];
+let pageno=req.query.pageno;
+    let skip_page=pageno*10;
+    let get_Histories=await History.find({
+    }).skip(skip_page).limit(10);
+     for (let i = 0; i < get_Histories.length; i++) {
+    let all_date = {
+      CreatedAt: moment(get_Histories[i].CreatedAt).format("DD/MM/YYYY"),
+      ticket: get_Histories[i].ticket,
+      id: get_Histories[i].id,
+      ticketCount: get_Histories[i].ticketCount,
+      username:get_Histories[i].username
+    };
+    get_all.push(all_date);
+  }
+    let data_count=await History.find().countDocuments();
+    res.status(200).json({response:"Got data successfully",data:get_all,count:data_count})
+  }
+  catch(error){
+    console.error(error)
+  }
+}
+
+
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
@@ -867,6 +893,7 @@ module.exports = {
   addWallettAmount,
   getWinner,
   updatePriceRate,
-  getResult
+  getResult,
+  getHistorry
 };
 
