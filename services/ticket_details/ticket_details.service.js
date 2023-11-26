@@ -389,168 +389,177 @@ const publish_result = async (req, res) => {
 
   console.log(price_rate.priceRate_splitup);
  
-  for (let i = 0; i < ticket_data.length; i++) {
+ for (let i = 0; i < ticket_data.length; i++) {
+    console.log(ticket_data[i].ticket, "Ticket", req.body, ticket_data.length);
     userid = ticket_data[i].userId;
-
     for (let j = 0; j < 4; j++) {
-      if (j == 0) {
-        if (ticket_data[i].ticket[0].digit == req.body[0].digit) {
-          firstdigit = req.body[0].digit;
-          if(price_rate!=null){
-           let pricerate11=price_rate.priceRate_splitup
-            pricerate_1=Array.from(pricerate11);
-            console.log(pricerate_1);
-            pricerate1=parseInt(pricerate_1[0])*parseInt(ticket_rate.ticketRate);
+      if (j === 0) {
+        if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
+          firstdigit = req.body[j].digit;
+          if (price_rate != null) {
+            let pricerate11 = price_rate.priceRate_splitup;
+            pricerate_1 = Array.from(pricerate11);
+
+            pricerate1 =
+              parseInt(pricerate_1[0]) * parseInt(ticket_rate.ticketRate);
           }
-          console.log(pricerate1);
-          console.log(typeof pricerate1)
-          console.log(ticket_data[i].userId)
-          let wallet_find=await Wallet.findOne({
-            userId:parseInt(ticket_data[i].userId)
-          })
-          console.log(typeof wallet_find.amount)
-          let addon_wallet=await Wallet.findOneAndUpdate({
-            userId:parseInt(ticket_data[i].userId)
-          },{
-            amount:wallet_find.amount+pricerate1
-          })
-          let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.0.status":"true"
-          });
-          // let status_update=await Ticket.findOneAndUpdate({
-          //     ticketId:ticket_data[i].ticketId,
-          // },{
-          //     status:"true"
-          // });
-        }
-        else{
-  let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.0.status":"false"
-          });
-          
-        }
-      } else if (j == 1) {
-        if (ticket_data[i].ticket[1].digit == req.body[1].digit) {
-          
-          if(firstdigit){
-            seconddigit = req.body[1].digit;
-            if(price_rate!=null){
-              let pricerate12=price_rate.priceRate_splitup
-               pricerate_2=Array.from(pricerate12)
-               pricerate2=parseInt(pricerate_2[1])*parseInt(ticket_rate.ticketRate)
-             }
-             console.log(pricerate2)
-             let wallet_find=await Wallet.findOne({
-              userId:parseInt(ticket_data[i].userId)
-            })
-            console.log(typeof wallet_find.amount)
-            let addon_wallet=await Wallet.findOneAndUpdate({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              amount:wallet_find.amount+pricerate2
-            })
-          let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.1.status":true
-          })
-        }
-        }
-        else{
-            let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.1.status":false
-          });
-        }
-      } else if (j == 2) {
-        if (ticket_data[i].ticket[2].digit == req.body[2].digit) {
 
-     
-          if(seconddigit){
-                 thirddigit = req.body[2].digit;
-            if(price_rate!=null){
-              let pricerate13=price_rate.priceRate_splitup
-               pricerate_3=Array.from(pricerate13)
-               pricerate3=parseInt(pricerate_3[2])*parseInt(ticket_rate.ticketRate)
-             }
-             console.log(pricerate3)
-             let wallet_find=await Wallet.findOne({
-              userId:parseInt(ticket_data[i].userId)
-            })
-            console.log(typeof wallet_find.amount)
-            let addon_wallet=await Wallet.findOneAndUpdate({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              amount:wallet_find.amount+pricerate3
-            })
-          let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.2.status":true
-          })
-        }
-        }
-        else{
-            let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.2.status":false
+          let wallet_find = await Wallet.findOne({
+            userId: parseInt(ticket_data[i].userId),
           });
-        }
-      } else if (j == 3) {
-        if (ticket_data[i].ticket[3].digit == req.body[3].digit) {
-          
 
-          if(thirddigit){
+          let addon_wallet = await Wallet.findOneAndUpdate(
+            {
+              userId: parseInt(ticket_data[i].userId),
+            },
+            {
+              amount: wallet_find.amount + pricerate1,
+            }
+          );
 
-            fourthdigit = req.body[3].digit;
-          let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.3.status":true
-          });
+          let ticket_update = await Ticket.findOneAndUpdate(
+            {
+              ticketId: ticket_data[i].ticketId,
+            },
+            {
+              "ticket.0.status": "true",
+            }
+          );
+          console.log(ticket_update, "Inside 0");
+        } else {
+          let ticket_update = await Ticket.findOneAndUpdate(
+            {
+              ticketId: ticket_data[i].ticketId,
+            },
+            {
+              "ticket.0.status": "false",
+            }
+          );
         }
+      } else if (j === 1) {
+        if (firstdigit !== undefined) {
+          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
+            seconddigit = req.body[j].digit;
+            if (price_rate != null) {
+              let pricerate12 = price_rate.priceRate_splitup;
+              pricerate_2 = Array.from(pricerate12);
+              pricerate2 = pricerate_2[0] * ticket_rate.ticketRate;
+            }
+
+            let wallet_find = await Wallet.findOne({
+              userId: parseInt(ticket_data[i].userId),
+            });
+            console.log(typeof wallet_find.amount);
+            let addon_wallet = await Wallet.findOneAndUpdate(
+              {
+                userId: parseInt(ticket_data[i].userId),
+              },
+              {
+                amount: wallet_find.amount + pricerate2,
+              }
+            );
+            let ticket_update = await Ticket.findOneAndUpdate(
+              {
+                ticketId: ticket_data[i].ticketId,
+              },
+              {
+                "ticket.1.status": "true",
+              }
+            );
+            console.log(ticket_update, "Inside 1");
+          } else {
+            let ticket_update = await Ticket.findOneAndUpdate(
+              {
+                ticketId: ticket_data[i].ticketId,
+              },
+              {
+                "ticket.1.status": "false",
+              }
+            );
+          }
         }
-        else{
-            let ticket_update=await Ticket.findOneAndUpdate({
-            ticketId:ticket_data[i].ticketId
-          },{
-            "ticket.3.status":false
-          });
+      } else if (j === 2) {
+        if (seconddigit != undefined) {
+          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
+            thirddigit = req.body[j].digit;
+            if (price_rate != null) {
+              let pricerate13 = price_rate.priceRate_splitup;
+              pricerate_3 = Array.from(pricerate13);
+              pricerate3 = pricerate_3[0] * ticket_rate.ticketRate;
+            }
+            let wallet_find = await Wallet.findOne({
+              userId: parseInt(ticket_data[i].userId),
+            });
+
+            let addon_wallet = await Wallet.findOneAndUpdate(
+              {
+                userId: parseInt(ticket_data[i].userId),
+              },
+              {
+                amount: wallet_find.amount + pricerate3,
+              }
+            );
+            let ticket_update = await Ticket.findOneAndUpdate(
+              {
+                ticketId: ticket_data[i].ticketId,
+              },
+              {
+                "ticket.2.status": "true",
+              }
+            );
+            console.log(ticket_update, "Inside 2");
+          } else {
+            let ticket_update = await Ticket.findOneAndUpdate(
+              {
+                ticketId: ticket_data[i].ticketId,
+              },
+              {
+                "ticket.2.status": "false",
+              }
+            );
+          }
+        }
+      } else if (j === 3) {
+        if (thirddigit != undefined) {
+          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
+            let ticket_update = await Ticket.findOneAndUpdate(
+              {
+                ticketId: ticket_data[i].ticketId,
+              },
+              {
+                "ticket.3.status": "true",
+              }
+            );
+            console.log(ticket_update, "Inside 0");
+          } else {
+            let ticket_update = await Ticket.findOneAndUpdate(
+              {
+                ticketId: ticket_data[i].ticketId,
+              },
+              {
+                "ticket.3.status": "false",
+              }
+            );
+          }
         }
       }
-      
     }
+    if (
+      firstdigit != undefined &&
+      seconddigit != undefined &&
+      thirddigit != undefined &&
+      fourthdigit != undefined
+    ) {
+      t += 1;
+    }
+
+    firstdigit = undefined;
+    seconddigit = undefined;
+    thirddigit = undefined;
+    fourthdigit = undefined;
   }
   console.log(firstdigit, seconddigit, thirddigit, fourthdigit);
-  if (
-    firstdigit != undefined &&
-    seconddigit != undefined &&
-    thirddigit != undefined &&
-    fourthdigit != undefined
-  ) {
-    t += 1;
-    let ticket_check =
-      String(firstdigit) +
-      String(seconddigit) +
-      String(thirddigit) +
-      String(fourthdigit);
-    
-    let history_update = await History.findOneAndUpdate(
-      {
-        userId: userid,
-
-      },
-      {
-        status: true,
-      }
-    );
-  }
+  
 
   return res
     .status(200)
