@@ -57,6 +57,10 @@ let User = new Schema({
     status:{
         type:Boolean,
         default:false
+    },
+    CreatedAt:{
+        type:Date,
+        default:Date.now()
     }
 }) 
   
