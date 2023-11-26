@@ -8,6 +8,7 @@ router.put("/updateUserDetails",user.updateUser);
 router.post("/addAgent",user.addAgent);
 router.get('/getAgent', user.getAgent); 
 router.get('/getAllUserData', user.getAllUser); 
+router.get('/getAllUsers', user.getAllUsers); 
 router.post('/sendMail', user.Sendmail); 
 router.get('/searchUser', user.SearchUser); 
 router.post('/sendPasswordMail', user.sendPasswordMail); 
