@@ -23,6 +23,10 @@ let Wallet = new Schema({
         type: Number,
         default:0
       },
+     alreadyTicketCount: {
+        type: Number,
+        default:0
+      },
     CreatedAt:{
         type:Date,
         default:Date.now()
