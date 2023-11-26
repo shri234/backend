@@ -214,6 +214,25 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const sendPasswordMail=async (req,res)=>{
+  let user_find=await User.findOne({
+    username:req.body.username
+  })
+  const mailOptions = {
+    from: 'sriramm0406@gmail.com',
+    to: req.body.email,
+    subject: 'Password Mail',
+    text: `${user_find.password}`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return res.status(500).send(error.toString());
+    }
+    res.status(200).send('Email sent: ' + info.response);
+  });
+}
+
 const Sendmail= async (req,res)=>{
   const mailOptions = {
     from: 'sriramm0406@gmail.com',
@@ -247,5 +266,6 @@ module.exports = {
   updateUser,getAgent,
   getAllUser,
   SearchUser,
-  Sendmail
+  Sendmail,
+  sendPasswordMail
 };
