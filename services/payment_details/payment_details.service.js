@@ -93,6 +93,9 @@ const paymentVerification = async (req, res) => {
 
 const redeemHistory=async (req,res)=>{
   try{
+     let date1=new Date()
+  let start_date1=new Date(date1.setHours(date1.getHours()+5))
+  new Date(date1.setMinutes(date1.getMinutes()+30))
   const redeemId=await getNextSequenceValue("redeemId")
   const redeemHistory=await RedeemHistory.create({
     redeemId:redeemId,
@@ -106,7 +109,7 @@ const redeemHistory=async (req,res)=>{
       amount:parseInt(req.body.amount),
       userId:parseInt(req.body.userId),
       username:req.body.username,
-      CreatedAt:date
+      CreatedAt:date1
     }
   )
   let wallet_find=await wallet.findOne({
