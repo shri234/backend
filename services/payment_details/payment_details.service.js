@@ -9,6 +9,7 @@ const Razorpay=require('razorpay');
 const Counter=require("../../model/Counter")
 const moment=require('moment');
 const wallet = require('../../model/wallet');
+const WalletHistory=require("../../model/wallet_history")
 
 const addPaymentDetails = async (req, res) => {  
   // const secret="BLUESTOCKSINVESTMENT"
