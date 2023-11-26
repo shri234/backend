@@ -724,15 +724,26 @@ const addTicketCount=async (req,res) =>{
   let start_date=new Date(req.query.date);
   const ticketId = await getNextSequenceValue("ticketId");
   for(let i=0;i<parseInt(req.body.ticketCount);i++){
+    let find_wallet=await Wallet.findOne({
+      userId:req.query.userId
+    })
+    if(find_wallet.alreadyTicketCount<=15){
   let add_count=await Wallet.updateOne({
     userId:req.query.userId
   },{
       ticketCount:req.body.ticketCount,
+      alreadyTicketCount:req.body.ticketCount
   });
-  }
   return res.status(200).json({response:"updated ticket count successfully"});
+  }
+  else{
+    
+  }
+}
 }
 catch(err){
+  console.log("Only 15 tickets can be bought")
+    return res.status(500).json({response:"Only 15 tickets can be bought"});
   console.error("Error",err)
 }
 }
