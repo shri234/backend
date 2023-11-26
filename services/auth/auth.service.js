@@ -223,7 +223,7 @@ const transporter = nodemailer.createTransport({
 
 const sendPasswordMail=async (req,res)=>{
   let user_find=await User.findOne({
-    username:req.body.username
+    email:req.body.email
   })
   const mailOptions = {
     from: 'sriramm0406@gmail.com',
