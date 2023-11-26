@@ -19,6 +19,10 @@ let WalletHistory = new Schema({
         type:String,
         default:null
     },
+    status:{
+        type:Boolean,
+        default:false
+    },
     CreatedAt:{
         type:Date,
         default:Date.now()
