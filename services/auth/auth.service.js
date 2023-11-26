@@ -267,5 +267,6 @@ module.exports = {
   getAllUser,
   SearchUser,
   Sendmail,
-  sendPasswordMail
+  sendPasswordMail,
+  getAllUsers
 };
