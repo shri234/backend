@@ -151,6 +151,7 @@ const addAgent = async (req, res) => {
 
 const getAgent = async (req, res) => {
   try{
+    let pageno=req.query.pageno
   const user = await User.findOne({ agentId:req.query.agentId})
   res.status(200).json({data:user});
   }
@@ -161,8 +162,11 @@ const getAgent = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try{
-  const user = await User.find({ referralId:req.query.referralId})
-  res.status(200).json({data:user});
+    let pageno=req.query.pageno
+    let skip_page=pageno*10
+  const user = await User.find({ referralId:req.query.referralId}).skip(skip_page).limit(10);
+    const user_count=await User.find({referralId:req.query.referralId}).countDocuments();
+  res.status(200).json({data:user,count:user_count});
   }
   catch(err){
     console.error("Error",err)
