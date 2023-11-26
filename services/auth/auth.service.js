@@ -194,10 +194,12 @@ const updateUser=async (req,res)=>{
 const SearchUser=async (req,res)=>{
   try{
   let arr=[];
+    console.log(req.query.username)
     let reqex = new RegExp("^" + req.query.username, "i");
 let searchUser=await User.find({
 username:{ $regex: regex }
 })
+    console.log(searchUser);
     if(searchUser==null){
       
     }
