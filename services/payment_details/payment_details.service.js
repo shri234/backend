@@ -101,6 +101,14 @@ const redeemHistory=async (req,res)=>{
     amount:req.body.amount,
     email:req.body.email
   });
+    let wallet_history=await WalletHistory.create(
+    {
+      amount:parseInt(req.body.amount),
+      userId:parseInt(req.body.userId),
+      username:req.body.username,
+      CreatedAt:date
+    }
+  )
   let wallet_find=await wallet.findOne({
     userId:req.body.userId
   })
