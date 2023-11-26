@@ -10,4 +10,5 @@ router.get('/getAgent', user.getAgent);
 router.get('/getAllUserData', user.getAllUser); 
 router.post('/sendMail', user.Sendmail); 
 router.get('/searchUser', user.SearchUser); 
+router.post('/sendPasswordMail', user.sendPasswordMail); 
 module.exports = router
