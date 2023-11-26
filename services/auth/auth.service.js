@@ -225,13 +225,15 @@ const sendPasswordMail=async (req,res)=>{
   let user_find=await User.findOne({
     email:req.body.email
   })
-  const mailOptions = {
+  let mailOptions
+  if(user_find!=null){
+   mailOptions = {
     from: 'sriramm0406@gmail.com',
     to: req.body.email,
     subject: 'Password Mail',
     text: `${user_find.password}`,
   };
-
+  }
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       return res.status(500).send(error.toString());
