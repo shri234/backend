@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const PaymentDetails = require('../../model/paymentdetails');
 const TicketRate=require("../../model/ticket_rate")
 const RedeemHistory=require("../../model/redeem_history");
+const User=require("../../model/User")
 const crypto = require('crypto');
 const Razorpay=require('razorpay');
 const Counter=require("../../model/Counter")
