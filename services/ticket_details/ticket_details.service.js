@@ -736,7 +736,7 @@ const addTicketCount=async (req,res) =>{
     userId:req.query.userId
   },{
       ticketCount:req.body.ticketCount,
-      alreadyTicketCount:req.body.ticketCount
+     alreadyTicketCount:find_wallet.alreadyTicketCount+req.body.ticketCount
   });
   return res.status(200).json({response:"updated ticket count successfully"});
   }
