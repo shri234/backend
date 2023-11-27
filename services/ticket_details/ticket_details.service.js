@@ -735,8 +735,8 @@ const addTicketCount=async (req,res) =>{
   let add_count=await Wallet.updateOne({
     userId:req.query.userId
   },{
-      ticketCount:req.body.ticketCount,
-     alreadyTicketCount:find_wallet.alreadyTicketCount+req.body.ticketCount
+      ticketCount:parseInt(req.body.ticketCount),
+      alreadyTicketCount:find_wallet.alreadyTicketCount+parseInt(req.body.ticketCount)
   });
   return res.status(200).json({response:"updated ticket count successfully"});
   }
