@@ -836,6 +836,23 @@ catch(error){
 
 }
 
+const getPriceRate=async(req,res)=>{
+  try{
+    let start_date = new Date(req.query.date);
+
+  let update_rate=await PriceRate.findOne({
+  CreatedAt:{
+    $gt:start_date
+  }
+  });
+  res.status(200).json("Got data successfully")
+}
+catch(error){
+  console.log(error);
+}
+
+}
+
 const getResult=async (req,res)=>{
   try{
 
@@ -903,6 +920,7 @@ module.exports = {
   getWinner,
   updatePriceRate,
   getResult,
-  getHistorry
+  getHistorry,
+  getPriceRate
 };
 
