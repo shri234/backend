@@ -21,7 +21,7 @@ app.use("/user", User);
 app.use("/ticket", ticket_details);
 app.use("/payment", payment_details);
 
-let port = process.env.PORT || 3002;
+let port = process.env.PORT || 8080;
 app.listen(port, function () {
   console.log(`Server Has Started! at port ${port}`);
 });
