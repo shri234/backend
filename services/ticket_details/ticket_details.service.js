@@ -736,9 +736,15 @@ catch(err){
 
 const getTicketRate = async (req, res) => {
   let start_date = new Date(req.query.date);
+  let date = new Date(req.query.date);
+
+  start_date.setDate(start_date.getDate()-1)
+  start_date.setHours(17, 0, 0, 0);
+  date.setHours(17,0,0,0)
+  console.log(start_date,date)
   try{
   let get_ticket_rate = await TicketRate.findOne({
-    CreatedAt: { $gt: start_date},
+    CreatedAt: { $gt: start_date,$lt:date},
   });
   return res
     .status(200)
