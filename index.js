@@ -17,6 +17,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
 app.use("/user", User);
 app.use("/ticket", ticket_details);
 app.use("/payment", payment_details);
