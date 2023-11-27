@@ -17,8 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/user", User);
-app.use("/api/ticket", ticket_details);
+app.use("/user", User);
+app.use("/ticket", ticket_details);
 app.use("/payment", payment_details);
 
 let port = process.env.PORT || 3002;
