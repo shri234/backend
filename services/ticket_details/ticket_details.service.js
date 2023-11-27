@@ -845,7 +845,7 @@ const getPriceRate=async(req,res)=>{
     $gt:start_date
   }
   });
-  res.status(200).json("Got data successfully")
+  res.status(200).json({response:"Got data successfully",data:update_rate})
 }
 catch(error){
   console.log(error);
