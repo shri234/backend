@@ -633,15 +633,7 @@ const addWalletAmount=async(req,res)=>{
     },{
       amount:parseInt(req.body.amount)
     });
-    let wallet_history=await WalletHistory.create(
-      {
-        amount:parseInt(req.body.amount),
-        userId:parseInt(req.body.userId),
-        username:req.body.username,
-        status:true,
-        CreatedAt:date
-      }
-    )
+    
   }
   else{
    wallet=await Wallet.create({
