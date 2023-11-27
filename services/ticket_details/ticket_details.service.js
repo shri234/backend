@@ -369,7 +369,7 @@ const publish_result = async (req, res) => {
   date.setHours(17,0,0,0)
   console.log(start_date,date)
   let ticket_data = await Ticket.find({ });
-  let price_rate=await PriceRate.findOne({ );
+  let price_rate=await PriceRate.findOne({ });
   let ticket_rate=await TicketRate.findOne({ });
   let result_add=await Result.create({
     result_ticket:req.body[0].digit+req.body[1].digit+req.body[2].digit+req.body[3].digit,
