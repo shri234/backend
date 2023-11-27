@@ -196,7 +196,7 @@ const SearchUser=async (req,res)=>{
   let arr=[];
     console.log(req.query.username)
     let reqex = new RegExp("^" + req.query.username, "i");
-let searchUser=await User.find({
+let searchUser=await User.findOne({
 username:req.query.username
 })
     console.log(searchUser);
