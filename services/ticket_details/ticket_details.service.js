@@ -443,7 +443,7 @@ const publish_result = async (req, res) => {
             if (price_rate != null) {
               let pricerate12 = price_rate.priceRate_splitup;
               pricerate_2 = Array.from(pricerate12);
-              pricerate2 = pricerate_2[0] * ticket_rate.ticketRate;
+              pricerate2 = pricerate_2[1] * ticket_rate.ticketRate;
             }
 
             let wallet_find = await Wallet.findOne({
@@ -485,7 +485,7 @@ const publish_result = async (req, res) => {
             if (price_rate != null) {
               let pricerate13 = price_rate.priceRate_splitup;
               pricerate_3 = Array.from(pricerate13);
-              pricerate3 = pricerate_3[0] * ticket_rate.ticketRate;
+              pricerate3 = pricerate_3[2] * ticket_rate.ticketRate;
             }
             let wallet_find = await Wallet.findOne({
               userId: parseInt(ticket_data[i].userId),
