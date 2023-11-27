@@ -782,7 +782,8 @@ const getWalletHistory=async(req,res)=>{
     all_data={
       number:a,
       CreatedAt:moment(get_wallet[i].CreatedAt).format("YYYY-MM-DD"),
-      amount:get_wallet[i].amount
+      amount:get_wallet[i].amount,
+      status:get_wallet[i].status
     }
     arr.push(all_data)
   }
