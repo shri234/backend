@@ -377,7 +377,7 @@ const publish_result = async (req, res) => {
   })
   
 
-  console.log(price_rate.priceRate_splitup);
+ 
  
  for (let i = 0; i < ticket_data.length; i++) {
     console.log(ticket_data[i].ticket, "Ticket", req.body, ticket_data.length);
