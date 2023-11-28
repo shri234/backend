@@ -324,10 +324,7 @@ const getTickets = async (req, res) => {
     CreatedAt: {
       $gt: start_date,
       $lt: date,
-    },
-            
-    
-                                      })
+    }})
    
   let ticket_count = await Ticket.find({
     userId: req.query.userId,
