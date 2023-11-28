@@ -963,9 +963,11 @@ async function updateTicket(){
   date1.setHours(date1.getHours()+24)
   let all_date=new Date()
   let all1_date=new Date()
-  all_date.setHours(17,0,0,0)
+  all_date.setHours(22,0,0,0)
+  all_date.setMinutes(30)
   all1_date.setDate(all1_date.getDate()+1)
-  all1_date.setHours(17,0,0,0)
+  all1_date.setHours(22,0,0,0)
+  all1_date.setMinutes(30)
   let update_ticket_date=await Ticket.updateMany({
     CreatedAt: {
       $gt:date,
@@ -977,7 +979,7 @@ async function updateTicket(){
   EndedAt:all1_date
   })
 }
-cron.schedule('40 1 * * *', async () => {
+cron.schedule('45 1 * * *', async () => {
   console.log('Cron job running every day at 5 PM IST');
  await  updateTicket()
 });
