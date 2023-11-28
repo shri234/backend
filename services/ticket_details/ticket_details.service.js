@@ -323,7 +323,7 @@ const getTickets = async (req, res) => {
     userId: req.query.userId,
     CreatedAt: {
       $gt: start_date,
-      $lt: end_date,
+      $lt: date,
     },
             
     
@@ -333,7 +333,7 @@ const getTickets = async (req, res) => {
     userId: req.query.userId,
     CreatedAt: {
       $gt: start_date,
-      $lt: end_date,
+      $lt: date,
     },
   }).countDocuments();
 
