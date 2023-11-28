@@ -317,6 +317,12 @@ count:nineth
 ]
 
 a=Math.min.apply(Math,lowestValueArr)
+
+  for(let k=0;k<all_data.length;k++){
+    if(all_data[k].count==a){
+      a=all_data[k].id
+    }
+  }
   return res.status(200).json({
     response: "Got data successfully",
     data: all_data,
