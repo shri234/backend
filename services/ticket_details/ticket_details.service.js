@@ -606,7 +606,7 @@ const getHistories = async (req, res) => {
   let pageno = req.query.pageno;
   let skip_page = pageno * 10;
   let get_all = [];
-  let get_Histories = await History.find({ username: req.query.username })
+  let get_Histories = await History.find({ userId: parseInt(req.query.userId) })
     .skip(skip_page)
     .limit(10);
   for (let i = 0; i < get_Histories.length; i++) {
@@ -619,7 +619,7 @@ const getHistories = async (req, res) => {
     get_all.push(all_date);
   }
   let get_count = await History.find({
-    username: req.query.username,
+    userId: parseInt(req.query.userId) ,
   }).countDocuments();
   console.log(get_all);
   return res.status(200).json({
