@@ -111,7 +111,7 @@ get_data=await Ticket.find({});
     firstdigit_arr.push(get_data[i].ticket[0].digit);
     }
     else if(digit==2){
-    if(digit1){
+    if(digit1!=undefined){
       if(digit1==get_data[i].ticket[0].digit){
           console.log("inside", digit1 , get_data[i].ticket[0])
          seconddigit_arr.push(get_data[i].ticket[1].digit);
@@ -119,7 +119,7 @@ get_data=await Ticket.find({});
     }
     }
     else if(digit==3){
-      if(digit2){
+      if(digit2!= undefined){
        if(digit2==get_data[i].ticket[1].digit){
           thirddigit_arr.push(get_data[i].ticket[2].digit);
       }
