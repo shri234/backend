@@ -838,10 +838,18 @@ catch(error){
 const getPriceRate=async(req,res)=>{
   try{
     let start_date = new Date(req.query.date);
+  let date = new Date(req.query.date);
+
+  start_date.setDate(start_date.getDate())
+  date.setDate(date.getDate()+1)
+  start_date.setHours(17, 0, 0, 0);
+  date.setHours(17,0,0,0)
+  console.log(start_date,date)
 
   let update_rate=await PriceRate.findOne({
   CreatedAt:{
-    $gt:start_date
+    $gt:start_date,
+    $lt:date
   }
   });
   res.status(200).json({response:"Got data successfully",data:update_rate})
