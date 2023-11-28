@@ -956,7 +956,7 @@ async function getNextSequenceValue(sequenceName) {
   return counter.seq;
 }
 
- function updateTicket(){
+async function updateTicket(){
   let date=new Date()
   date.setHours(15,0,0,0)
   let date1=new Date()
@@ -977,9 +977,9 @@ async function getNextSequenceValue(sequenceName) {
   EndedAt:all1_date
   })
 }
-cron.schedule('11 1 * * *', () => {
+cron.schedule('11 1 * * *', async () => {
   console.log('Cron job running every day at 5 PM IST');
-   updateTicket()
+ await  updateTicket()
 });
 
 module.exports = {
