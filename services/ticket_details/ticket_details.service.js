@@ -979,7 +979,7 @@ async function getNextSequenceValue(sequenceName) {
 }
 cron.schedule('11 1 * * *', () => {
   console.log('Cron job running every day at 5 PM IST');
-  await updateTicket()
+   updateTicket()
 });
 
 module.exports = {
