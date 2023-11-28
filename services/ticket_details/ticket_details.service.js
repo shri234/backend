@@ -343,20 +343,18 @@ const getTickets = async (req, res) => {
   try{
   let pageno = req.query.pageno;
   let skip_page = pageno * 10;
-  let start_date = new Date(req.query.date);
-  let date = new Date(req.query.date);
-
-  start_date.setDate(start_date.getDate())
-  date.setDate(date.getDate()+1)
-  start_date.setHours(17, 0, 0, 0);
-  date.setHours(17,0,0,0)
-  console.log(start_date,date)
+    let date=new Date()
+  let find_oneticket=await Ticket.findOne({
+    CreatedAt:{
+      $gt:date1
+    }
+  })
   let get_tickets = await Ticket.find({
     userId: req.query.userId,
-    CreatedAt: {
-      $gt: start_date,
-      $lt: date,
-    }})
+    CreatedAt:{
+      $gt:find_oneticket.StartedAt,
+      $lt:find_oneticket.EndedAt
+    })
    
   let ticket_count = await Ticket.find({
     userId: req.query.userId,
@@ -958,13 +956,29 @@ async function getNextSequenceValue(sequenceName) {
 }
 
 async function updateTicket(){
+  let date=new Date()
+  date.setHours(15,0,0,0)
+  let date1=new Date()
+  date1.setHours(date1.getHours()+24)
+  let all_date=new Date()
+  let all1_date=new Date()
+  all_date.setHours(17,0,0,0)
+  all1_date.setDate(all1_date.getDate()+1)
+  all1_date.setHours(17,0,0,0)
   let update_ticket_date=await Ticket.updateMany({
-    
+    CreatedAt: {
+      $gt:date,
+      $lt:date1
+    }
+  },
+  {
+  StartedAt:all_date,
+  EndedAt:all1_date
   })
 }
-cron.schedule('0 17 * * *', () => {
+cron.schedule('11 1 * * *', () => {
   console.log('Cron job running every day at 5 PM IST');
-  
+  await updateTicket()
 });
 
 module.exports = {
