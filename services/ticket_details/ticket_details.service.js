@@ -354,6 +354,7 @@ const getTickets = async (req, res) => {
     CreatedAt:{
       $gt:find_oneticket.StartedAt,
       $lt:find_oneticket.EndedAt
+    }
     })
    
   let ticket_count = await Ticket.find({
