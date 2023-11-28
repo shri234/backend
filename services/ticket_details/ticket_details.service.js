@@ -9,7 +9,8 @@ const moment = require("moment");
 const WalletHistory=require("../../model/wallet_history");
 const Wallet=require("../../model/wallet")
 const Result=require("../../model/result")
-const PriceRate=require("../../model/price_rate")
+const PriceRate=require("../../model/price_rate");
+const cron = require('node-cron');
 
 
 const addTicketDaily = async (req, res) => {
@@ -955,6 +956,16 @@ async function getNextSequenceValue(sequenceName) {
   );
   return counter.seq;
 }
+
+async function updateTicket(){
+  let update_ticket_date=await Ticket.updateMany({
+    
+  })
+}
+cron.schedule('0 17 * * *', () => {
+  console.log('Cron job running every day at 5 PM IST');
+  
+});
 
 module.exports = {
   addTicketDaily,
