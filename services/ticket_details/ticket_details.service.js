@@ -88,6 +88,8 @@ const get_Minimum = async (req, res) => {
   let all_data;
   let digit =parseInt(req.query.digit);
   let digit1=parseInt(req.query.digit1);
+  let digit2=parseInt(req.query.digit2);
+  let digit3=parseInt(req.query.digit3);
   // get_data = await Ticket.aggregate([
   //   {
   //     $match: {
@@ -111,18 +113,23 @@ get_data=await Ticket.find({});
     else if(digit==2){
     if(digit1){
       if(digit1==get_data[i].ticket[0].digit){
+          console.log("inside", digit1 , get_data[i].ticket[0])
          seconddigit_arr.push(get_data[i].ticket[1].digit);
       } 
     }
     }
     else if(digit==3){
-       if(digit1==get_data[i].ticket[1].digit){
+      if(digit2){
+       if(digit2==get_data[i].ticket[1].digit){
           thirddigit_arr.push(get_data[i].ticket[2].digit);
+      }
       }
     }
     else if(digit==4){
-         if(digit1==get_data[i].ticket[2].digit){
+      if(digit3){
+         if(digit3==get_data[i].ticket[2].digit){
           fourthdigit_arr.push(get_data[i].ticket[3].digit);
+      }
       }
     }
   }
