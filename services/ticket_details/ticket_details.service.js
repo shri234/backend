@@ -956,7 +956,7 @@ async function getNextSequenceValue(sequenceName) {
   return counter.seq;
 }
 
-async function updateTicket(){
+ function updateTicket(){
   let date=new Date()
   date.setHours(15,0,0,0)
   let date1=new Date()
