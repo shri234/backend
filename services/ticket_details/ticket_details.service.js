@@ -110,10 +110,7 @@ const get_Minimum = async (req, res) => {
   //     },
   //   },
   // ]);
-get_data=await Ticket.find({CreatedAt:{
-  $gt:start_date,
-  $lt:date
-}});
+get_data=await Ticket.find({});
 
   for (let i = 0; i < get_data.length; i++) {
     
