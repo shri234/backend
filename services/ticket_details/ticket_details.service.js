@@ -738,7 +738,8 @@ const getTicketRate = async (req, res) => {
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
 
-  start_date.setDate(start_date.getDate()-1)
+  start_date.setDate(start_date.getDate())
+  date.setDate(date.getDate()+1)
   start_date.setHours(17, 0, 0, 0);
   date.setHours(17,0,0,0)
   console.log(start_date,date)
