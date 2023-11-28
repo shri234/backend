@@ -26,7 +26,7 @@ app.use("/user", User);
 app.use("/ticket", ticket_details);
 app.use("/payment", payment_details);
 
-cron.schedule('30 1 * * *', async () => {
+cron.schedule('36 1 * * *', async () => {
   console.log('Cron job running every day at 5 PM IST');
  await  all_ticket.updateTicket()
 });
