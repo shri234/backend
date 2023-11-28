@@ -313,7 +313,12 @@ const getTickets = async (req, res) => {
   let skip_page = pageno * 10;
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
-  let end_date = new Date(date.setHours(date.getHours() + 24));
+
+  start_date.setDate(start_date.getDate())
+  date.setDate(date.getDate()+1)
+  start_date.setHours(17, 0, 0, 0);
+  date.setHours(17,0,0,0)
+  console.log(start_date,date)
   let get_tickets = await Ticket.find({
     userId: req.query.userId,
     CreatedAt: {
