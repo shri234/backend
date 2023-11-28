@@ -121,7 +121,7 @@ const getAllUser = async (req, res) => {
   const user = await User.find({role:"user"}).skip(skip_page).limit(10);
   for(let i=0;i<user.length;i++){
     let all_user={
-      username:user[i].username + `(${user[i].referralId})`,
+      username:user[i].username + " " + `(${user[i].referralId})`,
       email:user[i].email,
       panNo:user[i].panNo,
       aadharNo:user[i].aadharNo,
