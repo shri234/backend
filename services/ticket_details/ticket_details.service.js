@@ -90,6 +90,13 @@ const get_Minimum = async (req, res) => {
   let digit1=parseInt(req.query.digit1);
   let digit2=parseInt(req.query.digit2);
   let digit3=parseInt(req.query.digit3);
+   let start_date = new Date(req.query.date);
+  let date = new Date(req.query.date);
+
+  start_date.setDate(start_date.getDate()-1)
+  start_date.setHours(17, 0, 0, 0);
+  date.setHours(17,0,0,0)
+  console.log(start_date,date)
   // get_data = await Ticket.aggregate([
   //   {
   //     $match: {
@@ -103,7 +110,10 @@ const get_Minimum = async (req, res) => {
   //     },
   //   },
   // ]);
-get_data=await Ticket.find({});
+get_data=await Ticket.find({CreatedAt:{
+  $gt:start_date,
+  $lt:date
+}});
 
   for (let i = 0; i < get_data.length; i++) {
     
