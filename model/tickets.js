@@ -26,6 +26,11 @@ let Tickets = new Schema({
     type: Date,
     default: Date.now(),
   },
+
+  UpdatedAt:{
+    type:Date,
+    default: Date.now()
+  }
 });
 
 module.exports = mongoose.model("Tickets", Tickets);
