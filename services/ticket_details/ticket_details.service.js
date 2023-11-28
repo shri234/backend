@@ -113,7 +113,7 @@ get_data=await Ticket.find({});
     else if(digit==2){
     if(digit1!=undefined){
       if(digit1==get_data[i].ticket[0].digit){
-          console.log("inside", digit1 , get_data[i].ticket[0])
+       
          seconddigit_arr.push(get_data[i].ticket[1].digit);
       } 
     }
@@ -319,7 +319,9 @@ count:nineth
 a=Math.min.apply(Math,lowestValueArr)
 
   for(let k=0;k<all_data.length;k++){
+    console.log(a)
     if(all_data[k].count==a){
+      console.log("inside",a,all_data[k])
       a=all_data[k].id
     }
   }
