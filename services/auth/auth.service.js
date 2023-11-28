@@ -126,7 +126,8 @@ const getAllUser = async (req, res) => {
       panNo:user[i].panNo,
       aadharNo:user[i].aadharNo,
       address:user[i].address,
-      accountNo:user[i].accountNo
+      accountNo:user[i].accountNo,
+      mobileNumber:user[i].mobileNumber
     }
     user_all.push(all_user)
   }
