@@ -87,6 +87,7 @@ const get_Minimum = async (req, res) => {
   let a;
   let all_data;
   let digit =parseInt(req.query.digit);
+  let digit1=parseInt(req.query.digit1);
   // get_data = await Ticket.aggregate([
   //   {
   //     $match: {
@@ -103,20 +104,29 @@ const get_Minimum = async (req, res) => {
 get_data=await Ticket.find({});
 
   for (let i = 0; i < get_data.length; i++) {
+    
     if(digit==1){
     firstdigit_arr.push(get_data[i].ticket[0].digit);
     }
     else if(digit==2){
-    seconddigit_arr.push(get_data[i].ticket[1].digit);
+    if(digit1){
+      if(digit1==get_data[i].ticket[0].digit){
+         seconddigit_arr.push(get_data[i].ticket[1].digit);
+      } 
+    }
     }
     else if(digit==3){
-    thirddigit_arr.push(get_data[i].ticket[2].digit);
+       if(digit1==get_data[i].ticket[1].digit){
+          thirddigit_arr.push(get_data[i].ticket[2].digit);
+      }
     }
     else if(digit==4){
-    fourthdigit_arr.push(get_data[i].ticket[3].digit);
+         if(digit1==get_data[i].ticket[2].digit){
+          fourthdigit_arr.push(get_data[i].ticket[3].digit);
+      }
     }
   }
-
+  
   if(digit==1){
   for(let j=0;j<firstdigit_arr.length;j++){
     if(firstdigit_arr[j]==0){
@@ -362,7 +372,6 @@ const publish_result = async (req, res) => {
   let date1=new Date()
   let start_date1=new Date(date1.setHours(date1.getHours()+5))
   new Date(date1.setMinutes(date1.getMinutes()+30))
-
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
 
@@ -370,19 +379,33 @@ const publish_result = async (req, res) => {
   start_date.setHours(17, 0, 0, 0);
   date.setHours(17,0,0,0)
   console.log(start_date,date)
-  let ticket_data = await Ticket.find({ });
-  let price_rate=await PriceRate.findOne({ });
-  let ticket_rate=await TicketRate.findOne({ });
+  let ticket_data = await Ticket.find({
+    CreatedAt:{
+    $gt:start_date,
+    $lt:date
+    }
+  });
+  
+  let price_rate=await PriceRate.findOne({
+     CreatedAt:{
+    $gt:start_date,
+    $lt:date
+    }
+  });
+  
+  let ticket_rate=await TicketRate.findOne({
+     CreatedAt:{
+    $gt:start_date,
+    $lt:date
+    }
+  });
+  
   let result_add=await Result.create({
     result_ticket:req.body[0].digit+req.body[1].digit+req.body[2].digit+req.body[3].digit,
     CreatedAt:date1
   })
   
-
- 
- 
  for (let i = 0; i < ticket_data.length; i++) {
-   
     userid = ticket_data[i].userId;
     for (let j = 0; j < 4; j++) {
       if (j === 0) {
@@ -391,7 +414,6 @@ const publish_result = async (req, res) => {
           if (price_rate != null) {
             let pricerate11 = price_rate.priceRate_splitup;
             pricerate_1 = Array.from(pricerate11);
-
             pricerate1 =
               parseInt(pricerate_1[0]) * parseInt(ticket_rate.ticketRate);
           }
@@ -417,7 +439,6 @@ const publish_result = async (req, res) => {
               "ticket.0.status": "true",
             }
           );
-          console.log(ticket_update, "Inside 0");
         } else {
           let ticket_update = await Ticket.findOneAndUpdate(
             {
@@ -431,8 +452,9 @@ const publish_result = async (req, res) => {
       } else if (j === 1) {
         if (firstdigit !== undefined) {
           if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
+            
             seconddigit = req.body[j].digit;
-            if (price_rate != null) {
+            if (price_rate != null) { 
               let pricerate12 = price_rate.priceRate_splitup;
               pricerate_2 = Array.from(pricerate12);
               pricerate2 = pricerate_2[1] * ticket_rate.ticketRate;
