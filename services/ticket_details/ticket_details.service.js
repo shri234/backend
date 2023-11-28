@@ -385,7 +385,7 @@ const publish_result = async (req, res) => {
  
  
  for (let i = 0; i < ticket_data.length; i++) {
-    console.log(ticket_data[i].ticket, "Ticket", req.body, ticket_data.length);
+   
     userid = ticket_data[i].userId;
     for (let j = 0; j < 4; j++) {
       if (j === 0) {
