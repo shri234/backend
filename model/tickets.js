@@ -27,7 +27,11 @@ let Tickets = new Schema({
     default: Date.now(),
   },
 
-  UpdatedAt:{
+  StartedAt:{
+    type:Date,
+    default: Date.now()
+  },
+   EndedAt:{
     type:Date,
     default: Date.now()
   }
