@@ -120,14 +120,14 @@ get_data=await Ticket.find({});
     }
     else if(digit==3){
       if(digit2!= undefined){
-       if(digit2==get_data[i].ticket[1].digit){
+       if(digit2==get_data[i].ticket[1].digit && digit1== get_data[i].ticket[0].digit){
           thirddigit_arr.push(get_data[i].ticket[2].digit);
       }
       }
     }
     else if(digit==4){
       if(digit3 != undefined){
-         if(digit3==get_data[i].ticket[2].digit){
+         if(digit3==get_data[i].ticket[2].digit && digit1== get_data[i].ticket[0].digit && digit2 == get_data[i].ticket[1].digit){
           fourthdigit_arr.push(get_data[i].ticket[3].digit);
       }
       }
