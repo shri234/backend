@@ -9,9 +9,9 @@ const moment = require("moment");
 const WalletHistory=require("../../model/wallet_history");
 const Wallet=require("../../model/wallet")
 const Result=require("../../model/result")
-const PriceRate=require("../../model/price_rate");
-const cron = require('node-cron');
+const PriceRate=require("../../model/price_rate")
 
+const clients=[];
 
 const addTicketDaily = async (req, res) => {
   try {
@@ -343,19 +343,20 @@ const getTickets = async (req, res) => {
   try{
   let pageno = req.query.pageno;
   let skip_page = pageno * 10;
-    let date=new Date()
-  let find_oneticket=await Ticket.findOne({
-    CreatedAt:{
-      $gt:date1
-    }
-  })
+  let start_date = new Date(req.query.date);
+  let date = new Date(req.query.date);
+
+  start_date.setDate(start_date.getDate())
+  date.setDate(date.getDate()+1)
+  start_date.setHours(17, 0, 0, 0);
+  date.setHours(17,0,0,0)
+  console.log(start_date,date)
   let get_tickets = await Ticket.find({
     userId: req.query.userId,
-    CreatedAt:{
-      $gt:find_oneticket.StartedAt,
-      $lt:find_oneticket.EndedAt
-    }
-    })
+    CreatedAt: {
+      $gt: start_date,
+      $lt: date,
+    }})
    
   let ticket_count = await Ticket.find({
     userId: req.query.userId,
@@ -606,7 +607,7 @@ const getHistories = async (req, res) => {
   let pageno = req.query.pageno;
   let skip_page = pageno * 10;
   let get_all = [];
-  let get_Histories = await History.find({ userId: parseInt(req.query.userId) })
+  let get_Histories = await History.find({ username: req.query.username })
     .skip(skip_page)
     .limit(10);
   for (let i = 0; i < get_Histories.length; i++) {
@@ -619,7 +620,7 @@ const getHistories = async (req, res) => {
     get_all.push(all_date);
   }
   let get_count = await History.find({
-    userId: parseInt(req.query.userId) ,
+    username: req.query.username,
   }).countDocuments();
   console.log(get_all);
   return res.status(200).json({
@@ -727,6 +728,11 @@ if(wallet_find!=null){
       CreatedAt:date
     }
   )
+  clients.forEach((client) => {
+    client.write(`data: ${JSON.stringify(wallet_history)}\n\n`);
+  });
+
+  await getWall(parseInt(req.body.userId));
 }
 else{
   add_amount=await Wallet.create({
@@ -836,10 +842,42 @@ catch(err){
 }
 
 const getWallet=async(req,res)=>{
-  let get_wallet=await Wallet.findOne({
+  try{
+    let get_wallet
+    if(req.query){
+  get_wallet=await Wallet.findOne({
     userId:req.query.userId
   });
+}
+else{
+  console.log("inside")
+  get_wallet=await Wallet.findOne({
+    userId:userId
+  });
+}
+
   return res.status(200).json({data:get_wallet});
+}
+catch(err){
+  console.log(err)
+}
+}
+
+const getWall=async(userId)=>{
+  try{
+  console.log("inside")
+  let get_wallet=await Wallet.findOne({
+    userId:userId
+  });
+
+  clients.forEach((client) => {
+    client.write(`data: ${JSON.stringify(get_wallet)}\n\n`);
+  });
+  return get_wallet
+}
+catch(err){
+  console.log(err)
+}
 }
 
 const getWinner=async(req,res)=>{
@@ -946,6 +984,24 @@ let pageno=req.query.pageno;
   }
 }
 
+const callSecondApi=async (req,res)=>{
+
+res.setHeader('Content-Type', 'text/event-stream');
+res.setHeader('Cache-Control', 'no-cache');
+res.setHeader('Connection', 'keep-alive');
+
+
+clients.push(res);
+res.write(`data: ${JSON.stringify({ message: 'Connected' })}\n\n`);
+
+req.on('close', () => {
+  const index = clients.indexOf(res);
+  if (index !== -1) {
+    clients.splice(index, 1);
+  }
+});
+
+}
 
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
@@ -955,34 +1011,6 @@ async function getNextSequenceValue(sequenceName) {
   );
   return counter.seq;
 }
-
-async function updateTicket(){
-  let date=new Date()
- 
-  let date1=new Date()
-  date1.setHours(date1.getHours()+24)
-  let all_date=new Date()
-  let all1_date=new Date()
-  all_date.setHours(22,0,0,0)
-  all_date.setMinutes(30)
-  all1_date.setDate(all1_date.getDate()+1)
-  all1_date.setHours(22,0,0,0)
-  all1_date.setMinutes(30)
-  let update_ticket_date=await Ticket.updateMany({
-    CreatedAt: {
-      $gt:date,
-      $lt:date1
-    }
-  },
-  {
-  StartedAt:all_date,
-  EndedAt:all1_date
-  })
-}
-cron.schedule('0 17 * * *', async () => {
-  console.log('Cron job running every day at 5 PM IST');
- await  updateTicket()
-});
 
 module.exports = {
   addTicketDaily,
@@ -1001,6 +1029,7 @@ module.exports = {
   updatePriceRate,
   getResult,
   getHistorry,
-  getPriceRate
+  getPriceRate,
+  callSecondApi
 };
 
