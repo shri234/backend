@@ -18,5 +18,6 @@ router.put("/updatePriceRate",tickets.updatePriceRate);
 router.get("/getPriceRate",tickets.getPriceRate);
 router.get("/result",tickets.getResult);
 router.get("/getAllHistory",tickets.getHistorry);
+router.get("/sse",tickets.callSecondApi);
 module.exports = router
 
