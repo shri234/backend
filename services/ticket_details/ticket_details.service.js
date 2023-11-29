@@ -791,8 +791,10 @@ const getTicketRate = async (req, res) => {
 
   start_date.setDate(start_date.getDate())
   date.setDate(date.getDate()+1)
-  start_date.setHours(17, 0, 0, 0);
-  date.setHours(17,0,0,0)
+  start_date.setHours(22, 0, 0, 0);
+  start_date.setMinutes(30);
+  date.setHours(22,0,0,0);
+  date.setMinutes(30);
   console.log(start_date,date)
   try{
   let get_ticket_rate = await TicketRate.findOne({
