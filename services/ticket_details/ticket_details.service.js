@@ -10,6 +10,7 @@ const WalletHistory=require("../../model/wallet_history");
 const Wallet=require("../../model/wallet")
 const Result=require("../../model/result")
 const PriceRate=require("../../model/price_rate")
+const cron=require("node-cron")
 
 const clients=[];
 
@@ -75,11 +76,11 @@ const get_Minimum = async (req, res) => {
   let fourthdigit_arr=[];
   let lowestValueArr=[];
   let zeroth=0;
-  let oneth=0
-  let twoth=0
-  let threeth=0
-  let fourth=0
-  let fifth=0
+  let oneth=0;
+  let twoth=0;
+  let threeth=0;
+  let fourth=0;
+  let fifth=0;
   let sixth=0
   let seventh=0
   let eigth=0
@@ -346,24 +347,14 @@ const getTickets = async (req, res) => {
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
 
-  start_date.setDate(start_date.getDate())
-  date.setDate(date.getDate()+1)
-  start_date.setHours(17, 0, 0, 0);
-  date.setHours(17,0,0,0)
-  console.log(start_date,date)
+  
   let get_tickets = await Ticket.find({
-    userId: req.query.userId,
-    CreatedAt: {
-      $gt: start_date,
-      $lt: date,
-    }})
+    userId: req.query.userId
+  })
    
   let ticket_count = await Ticket.find({
     userId: req.query.userId,
-    CreatedAt: {
-      $gt: start_date,
-      $lt: date,
-    },
+   
   }).countDocuments();
 
   return res.status(200).json({
@@ -667,7 +658,7 @@ const addWalletAmount=async(req,res)=>{
   try{
   let date=new Date()
   let start_date=new Date(date.setHours(date.getHours()+5))
-  new Date(date.setMinutes(date.getMinutes()+30))
+  new Date(date.setMinutes(date.getMinutes()+30)) 
   let wallet_find=await Wallet.findOne({
     userId:req.body.userId
   });
@@ -789,16 +780,9 @@ const getTicketRate = async (req, res) => {
   let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
 
-  start_date.setDate(start_date.getDate())
-  date.setDate(date.getDate()+1)
-  start_date.setHours(22, 0, 0, 0);
-  start_date.setMinutes(30);
-  date.setHours(22,0,0,0);
-  date.setMinutes(30);
-  console.log(start_date,date)
+  
   try{
   let get_ticket_rate = await TicketRate.findOne({
-    CreatedAt: { $gt: start_date,$lt:date},
   });
   return res
     .status(200)
@@ -925,17 +909,8 @@ const getPriceRate=async(req,res)=>{
     let start_date = new Date(req.query.date);
   let date = new Date(req.query.date);
 
-  start_date.setDate(start_date.getDate())
-  date.setDate(date.getDate()+1)
-  start_date.setHours(17, 0, 0, 0);
-  date.setHours(17,0,0,0)
-  console.log(start_date,date)
 
   let update_rate=await PriceRate.findOne({
-  CreatedAt:{
-    $gt:start_date,
-    $lt:date
-  }
   });
   res.status(200).json({response:"Got data successfully",data:update_rate})
 }
@@ -947,9 +922,7 @@ catch(error){
 
 const getResult=async (req,res)=>{
   try{
-
     let data_get=await Result.findOne({
-
     })
     res.status(200).json({response:"Got data successfully",data:data_get})
   }
@@ -961,7 +934,7 @@ const getResult=async (req,res)=>{
 const getHistorry=async (req,res)=>{
   try{
     let get_all=[];
-let pageno=req.query.pageno;
+    let pageno=req.query.pageno;
     let skip_page=pageno*10;
     let get_Histories=await History.find({
     }).skip(skip_page).limit(10);
@@ -991,11 +964,8 @@ const callSecondApi=async (req,res)=>{
 res.setHeader('Content-Type', 'text/event-stream');
 res.setHeader('Cache-Control', 'no-cache');
 res.setHeader('Connection', 'keep-alive');
-
-
 clients.push(res);
 res.write(`data: ${JSON.stringify({ message: 'Connected' })}\n\n`);
-
 req.on('close', () => {
   const index = clients.indexOf(res);
   if (index !== -1) {
@@ -1004,6 +974,15 @@ req.on('close', () => {
 });
 
 }
+
+cron.schedule('0 17 * * *', async () => {
+  console.log('cron running at 5 pm everyday');
+  let delete_tickets=await Ticket.deleteMany({
+  });
+  let delete_ticketrate=await TicketRate.deleteMany({});
+  let delete_priceRate=await PriceRate.deleteMany({});
+});
+
 
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
