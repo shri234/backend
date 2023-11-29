@@ -979,7 +979,7 @@ async function updateTicket(){
   EndedAt:all1_date
   })
 }
-cron.schedule('45 1 * * *', async () => {
+cron.schedule('0 17 * * *', async () => {
   console.log('Cron job running every day at 5 PM IST');
  await  updateTicket()
 });
