@@ -10,10 +10,12 @@ const WalletHistory=require("../../model/wallet_history");
 const Wallet=require("../../model/wallet")
 const Result=require("../../model/result")
 const PriceRate=require("../../model/price_rate")
+const WeeklyTickets=require("../../model/weekly_tickets")
 const cron=require("node-cron")
 
 const clients=[];
-
+const clients1=[];
+const clients2=[];
 const addTicketDaily = async (req, res) => {
   try {
     let date = new Date();
@@ -44,6 +46,60 @@ if(wallet_u.ticketCount>0){
     let start_date=new Date(date.setHours(date.getHours()+5))
     new Date(date.setMinutes(date.getMinutes()+30))
     const add_ticket = await Ticket.create({
+      userId:parseInt(req.body.userId),
+      ticketId:ticketId,
+      ticket: req.body.ticket,
+      CreatedAt:date
+    });
+  }
+  else{
+    console.log("tickets you have bought is over please buy more and try");
+  }
+
+    const id = await getNextSequenceValue("id");
+    let user_history = await History.create({
+      username: user_find.username,
+      userId: parseInt(req.body.userId),
+      ticket: req.body.ticket,
+      id: id,
+    });
+    res.status(200).json({ response: "Data inserted successfully" });
+  } catch (error) {
+    console.error("Error adding ticket:", error);
+    res.status(500).json({ response: "Error inserting data" });
+  }
+};
+
+const addTicketWeekly = async (req, res) => {
+  try {
+    let date = new Date();
+    const ticketId = await getNextSequenceValue("ticketId");
+  
+    let user_find = await User.findOne({
+      userId: parseInt(req.body.userId),
+    });
+    // let ticket=await Ticket.findOne({
+    //   userId:parseInt(req.query.userId),
+    //   ticketId:parseInt(req.query.ticketId)
+    // });
+
+    // console.log(ticket);
+    
+    
+let wallet_u=await Wallet.findOne({
+  userId:parseInt(req.body.userId)
+});
+if(wallet_u.ticketCount>0){
+    let wallet_update=await Wallet.updateOne({
+      userId:parseInt(req.body.userId)
+    },
+    {
+      ticketCount:wallet_u.ticketCount-1
+    });
+    let date=new Date();
+    let start_date=new Date(date.setHours(date.getHours()+5))
+    new Date(date.setMinutes(date.getMinutes()+30))
+    const add_ticket = await WeeklyTickets.create({
       userId:parseInt(req.body.userId),
       ticketId:ticketId,
       ticket: req.body.ticket,
@@ -356,7 +412,9 @@ const getTickets = async (req, res) => {
     userId: req.query.userId,
    
   }).countDocuments();
-
+  clients2.forEach((client) => {
+    client.write(`data: ${JSON.stringify(get_tickets)}\n\n`);
+  });
   return res.status(200).json({
     response: "Got data successfully",
     data: get_tickets,
@@ -577,8 +635,14 @@ const publish_result = async (req, res) => {
     fourthdigit = undefined;
   }
   console.log(firstdigit, seconddigit, thirddigit, fourthdigit);
-  
-
+  clients1.forEach((client) => {
+    client.write(`data: ${JSON.stringify(t)}\n\n`);
+  });
+  await getResult();
+  clients2.forEach((client) => {
+    client.write(`data: ${JSON.stringify(t)}\n\n`);
+  });
+  await getTickets();
   return res
     .status(200)
     .json({ response: "Published result successfully", Winners: t });
@@ -842,7 +906,7 @@ catch(err){
 
 const getWall=async(userId)=>{
   try{
-  console.log("inside")
+ 
   let get_wallet=await Wallet.findOne({
     userId:userId
   });
@@ -857,10 +921,13 @@ catch(err){
 }
 }
 
+
+
 const getWinner=async(req,res)=>{
   try{
   let all_data={};
   let user_find;
+  let arr=[];
   let get_wallet=await Ticket.find({});
   for(let i=0;i<get_wallet.length;i++){
     console.log(get_wallet[i])
@@ -868,10 +935,11 @@ const getWinner=async(req,res)=>{
       user_find=await User.findOne({
         userId:get_wallet[i].userId
       });
+      arr.push(user_find.username)
     }
   }
 
-  return res.status(200).json({data:user_find.username});
+  return res.status(200).json({data:arr});
   }
   catch(err){
     console.error("Error")
@@ -915,6 +983,9 @@ const getResult=async (req,res)=>{
   try{
     let data_get=await Result.findOne({
     })
+    clients1.forEach((client) => {
+      client.write(`data: ${JSON.stringify(data_get)}\n\n`);
+    });
     res.status(200).json({response:"Got data successfully",data:data_get})
   }
   catch(error){
@@ -951,7 +1022,6 @@ const getHistorry=async (req,res)=>{
 }
 
 const callSecondApi=async (req,res)=>{
-
 res.setHeader('Content-Type', 'text/event-stream');
 res.setHeader('Cache-Control', 'no-cache');
 res.setHeader('Connection', 'keep-alive');
@@ -963,15 +1033,47 @@ req.on('close', () => {
     clients.splice(index, 1);
   }
 });
-
 }
 
-cron.schedule('0 17 * * *', async () => {
-  console.log('cron running at 5 pm everyday');
+const callSecondApi1=async (req,res)=>{
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  clients1.push(res);
+  res.write(`data: ${JSON.stringify({ message: 'Connected' })}\n\n`);
+  req.on('close', () => {
+    const index = clients1.indexOf(res);
+    if (index !== -1) {
+      clients1.splice(index, 1);
+    }
+  });
+  }
+
+  const callSecondApi2=async (req,res)=>{
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    clients2.push(res);
+    res.write(`data: ${JSON.stringify({ message: 'Connected' })}\n\n`);
+    req.on('close', () => {
+      const index = clients2.indexOf(res);
+      if (index !== -1) {
+        clients2.splice(index, 1);
+      }
+    });
+    }
+
+cron.schedule('0 18 * * *', async () => {
+  console.log('cron running at 6 pm everyday');
   let delete_tickets=await Ticket.deleteMany({
   });
   let delete_ticketrate=await TicketRate.deleteMany({});
   let delete_priceRate=await PriceRate.deleteMany({});
+});
+
+cron.schedule('0 19 * * *', async () => {
+  console.log('cron running at 7 pm everyday');
+ let reault_delete=await Result.deleteMany({});
 });
 
 
@@ -1002,6 +1104,8 @@ module.exports = {
   getResult,
   getHistorry,
   getPriceRate,
-  callSecondApi
+  callSecondApi,
+  callSecondApi1,
+  callSecondApi2
 };
 
