@@ -19,5 +19,7 @@ router.get("/getPriceRate",tickets.getPriceRate);
 router.get("/result",tickets.getResult);
 router.get("/getAllHistory",tickets.getHistorry);
 router.get("/sse",tickets.callSecondApi);
+router.get("/sse1",tickets.callSecondApi1);
+router.get("/sse2",tickets.callSecondApi2);
 module.exports = router
 
