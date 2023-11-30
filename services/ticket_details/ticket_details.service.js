@@ -10,7 +10,7 @@ const WalletHistory=require("../../model/wallet_history");
 const Wallet=require("../../model/wallet")
 const Result=require("../../model/result")
 const PriceRate=require("../../model/price_rate")
-const WeeklyTickets=require("../../model/weekly_tickets")
+// const WeeklyTickets=require("../../model/weekly_tickets")
 const cron=require("node-cron")
 
 const clients=[];
