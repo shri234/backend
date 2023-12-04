@@ -2,7 +2,7 @@ let express = require("express"),
   mongoose = require("mongoose"),
   bodyParser = require("body-parser");
 cors = require("cors");
-const cron=require("node-cron")
+const cron = require("node-cron");
 
 const User = require("./services/auth/auth.controller");
 const ticket_details = require("./services/ticket_details/ticket_details.contrroller");
@@ -19,14 +19,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
+app.get("/", (req, res) => {
+  res.send("Hello, changed!");
 });
 app.use("/user", User);
 app.use("/ticket", ticket_details);
 app.use("/payment", payment_details);
-
-
 
 let port = process.env.PORT || 3002;
 app.listen(port, function () {
