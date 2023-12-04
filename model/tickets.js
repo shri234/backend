@@ -19,22 +19,22 @@ let Tickets = new Schema({
   },
   userId: {
     type: Number,
-    default:0
+    default: 0,
   },
-  
+
   CreatedAt: {
     type: Date,
     default: Date.now(),
   },
 
-  StartedAt:{
-    type:Date,
-    default: Date.now()
+  StartedAt: {
+    type: Date,
+    default: Date.now(),
   },
-   EndedAt:{
-    type:Date,
-    default: Date.now()
-  }
+  EndedAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 module.exports = mongoose.model("Tickets", Tickets);
