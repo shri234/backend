@@ -414,13 +414,15 @@ const monthlyPublishTicketResult = async (req, res) => {
   let ticket_rate = await TicketRate.findOne({});
 
   let result_add = await Result.create({
-    result_ticket:
-      req.body[0].digit +
-      req.body[1].digit +
-      req.body[2].digit +
-      req.body[3].digit,
+    winning_ticket: {
+      result_ticket_1: req.body.ticket_1,
+      result_ticket_2: req.body.ticket_2,
+      result_ticket_3: req.body.ticket_3,
+    },
+
     CreatedAt: date1,
   });
+  console.log(req.body.ticket_1, req.body.ticket_2, req.body.ticket_3);
 
   for (let i = 0; i < ticket_data.length; i++) {
     userid = ticket_data[i].userId;
@@ -588,15 +590,7 @@ const monthlyPublishTicketResult = async (req, res) => {
     thirddigit = undefined;
     fourthdigit = undefined;
   }
-  console.log(firstdigit, seconddigit, thirddigit, fourthdigit);
-  clients1.forEach((client) => {
-    client.write(`data: ${JSON.stringify(t)}\n\n`);
-  });
-  await getResult();
-  clients2.forEach((client) => {
-    client.write(`data: ${JSON.stringify(t)}\n\n`);
-  });
-  await getTickets();
+
   return res
     .status(200)
     .json({ response: "Published result successfully", Winners: t });
@@ -716,10 +710,9 @@ const getMonthlyPriceRate = async (req, res) => {
 // Result
 const getMonthlyResult = async (req, res) => {
   try {
-    let data_get = await Result.findOne({});
-    // clients1.forEach((client) => {
-    //   client.write(`data: ${JSON.stringify(data_get)}\n\n`);
-    // });
+    let data_get = await Result.find({});
+    console.log(data_get, "get");
+
     res.status(200).json({ response: "Got data successfully", data: data_get });
   } catch (error) {
     console.error(error);
