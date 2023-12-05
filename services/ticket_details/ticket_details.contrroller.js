@@ -10,11 +10,11 @@ router.post("/add-weekly-ticket", weekly_ticket.addTicketWeekly);
 router.get("/get-weekly-tickets", weekly_ticket.getWeeklyTickets);
 router.get("/get-weekly-ticket-rate", weekly_ticket.getWeeklyTicketRate);
 router.get("/get-weekly-minimum", weekly_ticket.getMinimumWeeklyTicket);
-router.get("/weekly-publish-result", weekly_ticket.weeklyPublishTicketResult);
-router.get("/add-weekly-ticket-rate", weekly_ticket.addWeeklyTicketRate);
-router.get("/add-weekly-ticket-count", weekly_ticket.addWeeklyTicketCount);
+router.post("/publish-weekly-result", weekly_ticket.weeklyPublishTicketResult);
+router.post("/add-weekly-ticket-rate", weekly_ticket.addWeeklyTicketRate);
+router.post("/add-weekly-ticket-count", weekly_ticket.addWeeklyTicketCount);
 router.get("/get-weekly-price-rate", weekly_ticket.getWeeklyPriceRate);
-router.get("/add-weekly-price-rate", weekly_ticket.addWeeklyPriceRate);
+router.post("/add-weekly-price-rate", weekly_ticket.addWeeklyPriceRate);
 router.get("/get-weekly-winner", weekly_ticket.getWeeklyWinner);
 router.get("/get-weekly-result", weekly_ticket.getWeeklyResult);
 router.get("/get-weekly-ticket-count", weekly_ticket.getWeeklyBuyedTicketCount);
@@ -24,14 +24,14 @@ router.post("/add-monthly-ticket", monthly_ticket.addTicketMonthly);
 router.get("/get-monthly-tickets", monthly_ticket.getMonthlyTickets);
 router.get("/get-monthly-ticket-rate", monthly_ticket.getMonthlyTicketRate);
 router.get("/get-monthly-minimum", monthly_ticket.getMinimumMonthlyTicket);
-router.get(
-  "/monthly-publish-result",
+router.post(
+  "/publish-monthly-result",
   monthly_ticket.monthlyPublishTicketResult
 );
-router.get("/add-monthly-ticket-rate", monthly_ticket.addMonthlyTicketRate);
+router.post("/add-monthly-ticket-rate", monthly_ticket.addMonthlyTicketRate);
 router.get("/add-monthly-ticket-count", monthly_ticket.addMonthlyTicketCount);
 router.get("/get-monthly-price-rate", monthly_ticket.getMonthlyPriceRate);
-router.get("/add-monthly-price-rate", monthly_ticket.addMonthlyPriceRate);
+router.post("/add-monthly-price-rate", monthly_ticket.addMonthlyPriceRate);
 router.get("/get-monthly-winner", monthly_ticket.getMonthlyWinner);
 router.get(
   "/get-monthly-ticket-count",
@@ -43,7 +43,7 @@ router.get("/get-monthly-result", monthly_ticket.getMonthlyResult);
 router.post("/addTicket", tickets.addTicketDaily);
 router.get("/get-daily-minimum", tickets.getMinimum);
 router.get("/get-daily-tickets", tickets.getTickets);
-router.post("/publishResult", tickets.publish_result);
+router.post("/publish-daily-result", tickets.publish_result);
 router.get("/getHistory", tickets.getHistories);
 router.get("/get-daily-ticket-rate", tickets.getTicketRate);
 router.post("/addTicketRate", tickets.addTicketRate);
