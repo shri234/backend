@@ -70,13 +70,15 @@ const addMonthlyTicketCount = async (req, res) => {
       let find_wallet = await Wallet.findOne({
         userId: req.query.userId,
       });
+
       if (find_wallet.alreadyMonthlyTicketCount <= 15) {
         let add_count = await Wallet.updateOne(
           {
             userId: req.query.userId,
           },
           {
-            monthlyTicketCount: parseInt(req.body.ticketCount),
+            monthlyTicketCount:
+              monthlyTicketCount + parseInt(req.body.ticketCount),
             alreadyMonthlyTicketCount:
               find_wallet.alreadyMonthlyTicketCount +
               parseInt(req.body.ticketCount),

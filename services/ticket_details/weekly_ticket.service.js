@@ -621,7 +621,8 @@ const addWeeklyTicketCount = async (req, res) => {
             userId: req.query.userId,
           },
           {
-            weeklyTicketCount: parseInt(req.body.ticketCount),
+            weeklyTicketCount:
+              weeklyTicketCount + parseInt(req.body.ticketCount),
             alreadyWeeklyTicketCount:
               find_wallet.alreadyWeeklyTicketCount +
               parseInt(req.body.ticketCount),
