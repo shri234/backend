@@ -248,7 +248,7 @@ const SearchUser = async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "anthonyvinos@gmail.com",
+    user: "mumbaimahaspinmaster@gmail.com",
     pass: "qnxy whqb isat bzqf",
   },
 });
@@ -260,7 +260,7 @@ const sendPasswordMail = async (req, res) => {
   let mailOptions;
   if (user_find != null) {
     mailOptions = {
-      from: "anthonyvinos@gmail.com",
+      from: "mumbaimahaspinmaster@gmail.com",
       to: req.body.email,
       subject: "Password Mail",
       text: `${user_find.password}`,
@@ -276,8 +276,8 @@ const sendPasswordMail = async (req, res) => {
 
 const Sendmail = async (req, res) => {
   const mailOptions = {
-    from: "anthonyvinos@gmail.com",
-    to: req.body.email,
+    from: req.body.email,
+    to: "mumbaimahaspinmaster@gmail.com",
     subject: "Request Email",
     text: req.body.fullname + req.body.message,
   };

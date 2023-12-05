@@ -716,17 +716,24 @@ const addTicketCount = async (req, res) => {
   try {
     let start_date = new Date(req.query.date);
     const ticketId = await getNextSequenceValue("ticketId");
+    console.log(req.body, "request");
     for (let i = 0; i < parseInt(req.body.ticketCount); i++) {
       let find_wallet = await Wallet.findOne({
         userId: req.query.userId,
       });
+      console.log(
+        find_wallet.alreadyDailyTicketCount,
+        req.query.userId,
+        find_wallet
+      );
       if (find_wallet.alreadyDailyTicketCount <= 15) {
         let add_count = await Wallet.updateOne(
           {
             userId: req.query.userId,
           },
           {
-            dailyTicketCount: parseInt(req.body.ticketCount),
+            dailyTicketCount:
+              find_wallet.dailyTicketCount + parseInt(req.body.ticketCount),
             alreadyDailyTicketCount:
               find_wallet.alreadyDailyTicketCount +
               parseInt(req.body.ticketCount),
@@ -739,7 +746,6 @@ const addTicketCount = async (req, res) => {
         return res
           .status(200)
           .json({ response: "updated ticket count successfully" });
-      } else {
       }
     }
   } catch (err) {
