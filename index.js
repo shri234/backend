@@ -22,12 +22,9 @@ mongoose.connect(
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-const corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true,
-};
 
-app.use(cors(corsOptions));
+
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
