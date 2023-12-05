@@ -23,7 +23,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://moneyminninggame.cloud",
   credentials: true,
 };
 
