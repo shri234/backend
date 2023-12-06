@@ -253,7 +253,9 @@ const SearchUser = async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
+ 
     user: "mumbaimahaspinmaster@gmail.com",
+ 
     pass: "qnxy whqb isat bzqf",
   },
 });
