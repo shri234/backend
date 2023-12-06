@@ -84,9 +84,7 @@ const getWeeklyTickets = async (req, res) => {
     let ticket_count = await Weekly_Tickets.find({
       userId: req.query.userId,
     }).countDocuments();
-    clients2.forEach((client) => {
-      client.write(`data: ${JSON.stringify(get_tickets)}\n\n`);
-    });
+ 
     return res.status(200).json({
       response: "Got data successfully",
       data: get_tickets,
