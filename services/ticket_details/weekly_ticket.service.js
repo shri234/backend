@@ -7,6 +7,11 @@ const WeeklyResult = require("../../model/WeeklyResult");
 const PriceRate = require("../../model/weekly_price_rate");
 const Weekly_Tickets = require("../../model/weekly_ticket");
 
+const weeklyticketrate = require("../../model/WeeklyTicketRate");
+const Counter = require("../../model/Counter");
+const WeeklyHistory=require("../../model/weekly_master_history");
+const WeeklyTicketCount=require("../../model/weekly_ticket_count");
+
 // create Weekly_Tickets
 const addTicketWeekly = async (req, res) => {
   try {
@@ -17,17 +22,17 @@ const addTicketWeekly = async (req, res) => {
       userId: parseInt(req.body.userId),
     });
 
-    let wallet_u = await Wallet.findOne({
+    let wallet_u = await WeeklyTicketCount.findOne({
       userId: parseInt(req.body.userId),
     });
     if (wallet_u.weeklyTicketCount > 0) {
-      let wallet_update = await Wallet.updateOne(
+      let wallet_update = await WeeklyTicketCount.updateOne(
         {
           userId: parseInt(req.body.userId),
         },
         {
           weeklyTicketCount: wallet_u.weeklyTicketCount - 1,
-          ticketCount: wallet_u.ticketCount - 1,
+         
         }
       );
       let date = new Date();
@@ -49,6 +54,13 @@ const addTicketWeekly = async (req, res) => {
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
       id: id,
+    });
+    let weekly_history = await WeeklyHistory.create({
+      username: user_find.username,
+      userId: parseInt(req.body.userId),
+      ticket: req.body.ticket,
+      id: id,
+      CreatedAt:date
     });
     res.status(200).json({ response: "Data inserted successfully" });
   } catch (error) {
@@ -574,14 +586,15 @@ const addWeeklyTicketRate = async (req, res) => {
 
 //  Get Weekly ticket rate
 const getWeeklyTicketRate = async (req, res) => {
-  let start_date = new Date(req.query.date);
-  let date = new Date(req.query.date);
 
   try {
-    let get_ticket_rate = await Weekly_Tickets.findOne({});
+
+    let get_ticket_rate = await weeklyticketrate.findOne({});
+
     return res
       .status(200)
       .json({ response: "Got Data successfully", data: get_ticket_rate });
+
   } catch (err) {
     console.error("Error", err);
   }
@@ -592,11 +605,11 @@ const getWeeklyBuyedTicketCount = async (req, res) => {
   try {
     let get_ticket_count;
     if (req.query) {
-      get_ticket_count = await Wallet.findOne({
+      get_ticket_count = await WeeklyTicketCount.findOne({
         userId: req.query.userId,
       });
     } else {
-      get_ticket_count = await Wallet.findOne({
+      get_ticket_count = await WeeklyTicketCount.findOne({
         userId: userId,
       });
     }
@@ -613,29 +626,24 @@ const addWeeklyTicketCount = async (req, res) => {
     let start_date = new Date(req.query.date);
     const ticketId = await getNextSequenceValue("ticketId");
     for (let i = 0; i < parseInt(req.body.ticketCount); i++) {
-      let find_wallet = await Wallet.findOne({
-        userId: req.query.userId,
-      });
+   let find_wallet=await WeeklyTicketCount.findOne({
+    userId:req.query.userId
+   })
       if (find_wallet.alreadyWeeklyTicketCount <= 15) {
-        let add_count = await Wallet.updateOne(
+        let add_count = await WeeklyTicketCount.updateOne(
           {
             userId: req.query.userId,
-          },
-          {
+          },{
             weeklyTicketCount:
               weeklyTicketCount + parseInt(req.body.ticketCount),
             alreadyWeeklyTicketCount:
               find_wallet.alreadyWeeklyTicketCount +
-              parseInt(req.body.ticketCount),
-
-            ticketCount: parseInt(req.body.ticketCount),
-            alreadyTicketCount:
-              find_wallet.alreadyTicketCount + parseInt(req.body.ticketCount),
+              parseInt(req.body.ticketCount)
           }
         );
         return res
           .status(200)
-          .json({ response: "updated ticket count successfully" });
+          .json({ response: "added ticket count successfully" });
       } else {
       }
     }
@@ -718,6 +726,47 @@ const getWeeklyResult = async (req, res) => {
   }
 };
 
+
+const getWeeklyHistory = async (req, res) => {
+  try {
+    let get_all = [];
+    let pageno = req.query.pageno;
+    let skip_page = pageno * 10;
+    let get_Histories = await WeeklyHistory.find({}).skip(skip_page).limit(10);
+    for (let i = 0; i < get_Histories.length; i++) {
+      let find_user = await User.findOne({
+        username: get_Histories[i].username,
+      });
+      let all_date = {
+        CreatedAt: moment(get_Histories[i].CreatedAt).format("DD/MM/YYYY"),
+        ticket: get_Histories[i].ticket,
+        id: get_Histories[i].id,
+        ticketCount: get_Histories[i].ticketCount,
+        username: get_Histories[i].username + `(${find_user.referralId})`,
+      };
+      get_all.push(all_date);
+    }
+    let data_count = await WeeklyHistory.find().countDocuments();
+    res.status(200).json({
+      response: "Got data successfully",
+      data: get_all,
+      count: data_count,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+async function getNextSequenceValue(sequenceName) {
+  const counter = await Counter.findOneAndUpdate(
+    { _id: sequenceName },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  return counter.seq;
+}
+
+
 module.exports = {
   addTicketWeekly,
   getWeeklyTickets,
@@ -731,5 +780,6 @@ module.exports = {
   getWeeklyWinner,
   getWeeklyBuyedTicketCount,
   getWeeklyResult,
+  getWeeklyHistory
 };
 

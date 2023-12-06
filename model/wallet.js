@@ -19,39 +19,7 @@ let Wallet = new Schema({
     type: Number,
     default: null,
   },
-  monthlyTicketCount: {
-    type: Number,
-    default: 0,
-  },
-  weeklyTicketCount: {
-    type: Number,
-    default: 0,
-  },
-  dailyTicketCount: {
-    type: Number,
-    default: 0,
-  },
-  alreadyDailyTicketCount: {
-    type: Number,
-    default: 0,
-  },
-  alreadyWeeklyTicketCount: {
-    type: Number,
-    default: 0,
-  },
-  alreadyMonthlyTicketCount: {
-    type: Number,
-    default: 0,
-  },
 
-  ticketCount: {
-    type: Number,
-    default: 0,
-  },
-  alreadyTicketCount: {
-    type: Number,
-    default: 0,
-  },
   CreatedAt: {
     type: Date,
     default: Date.now(),
