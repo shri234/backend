@@ -565,7 +565,7 @@ const weeklyPublishTicketResult = async (req, res) => {
                 }
               );
             }
-          }
+          
         }
       }
     }
@@ -584,14 +584,7 @@ const weeklyPublishTicketResult = async (req, res) => {
     fourthdigit = undefined;
   }
   console.log(firstdigit, seconddigit, thirddigit, fourthdigit);
-  clients1.forEach((client) => {
-    client.write(`data: ${JSON.stringify(t)}\n\n`);
-  });
-  await getResult();
-  clients2.forEach((client) => {
-    client.write(`data: ${JSON.stringify(t)}\n\n`);
-  });
-  await getTickets();
+ 
   return res
     .status(200)
     .json({ response: "Published result successfully", Winners: t });
