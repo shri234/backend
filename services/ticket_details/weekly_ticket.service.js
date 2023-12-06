@@ -448,7 +448,9 @@ const weeklyPublishTicketResult = async (req, res) => {
                 userId: parseInt(ticket_data[i].userId),
               },
               {
+
                 amount: wallet_find.amount + pricerate2,
+
               }
             );
             let ticket_update = await Weekly_Tickets.findOneAndUpdate(
@@ -487,52 +489,126 @@ const weeklyPublishTicketResult = async (req, res) => {
             let addon_wallet = await Wallet.findOneAndUpdate(
               {
                 userId: parseInt(ticket_data[i].userId),
-              },
-              {
-                amount: wallet_find.amount + pricerate3,
-              }
-            );
-            let ticket_update = await Weekly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.2.status": "true",
-              }
-            );
-            console.log(ticket_update, "Inside 2");
-          } else {
-            let ticket_update = await Weekly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.2.status": "false",
-              }
-            );
+
+              });
+              console.log(typeof wallet_find.amount);
+              let addon_wallet = await Wallet.findOneAndUpdate(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  amount:
+                    wallet_find.amount + pricerate2,
+                }
+              );
+              let ticket_update = await Weekly_Tickets.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.1.status": "true",
+                }
+              );
+              console.log(ticket_update, "Inside 1");
+            } else {
+              let ticket_update = await Weekly_Tickets.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.1.status": "false",
+                }
+              );
+            }
           }
-        }
-      } else if (j === 3) {
-        if (thirddigit != undefined) {
-          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            let ticket_update = await Weekly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.3.status": "true",
+        } else if (j === 2) {
+          if (seconddigit != undefined) {
+            if (
+              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
+            ) {
+              thirddigit = req.body[j].digit;
+              if (price_rate != null) {
+                let pricerate13 = price_rate.priceRate_splitup;
+                pricerate_3 = Array.from(pricerate13);
+                pricerate3 = pricerate_3[2] * ticket_rate.ticketRate;
               }
-            );
-            console.log(ticket_update, "Inside 0");
-          } else {
-            let ticket_update = await Weekly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.3.status": "false",
+              let wallet_find = await Wallet.findOne({
+                userId: parseInt(ticket_data[i].userId),
+              });
+
+              let addon_wallet = await Wallet.findOneAndUpdate(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  amount:
+                    wallet_find.amount + pricerate3,
+                }
+              );
+              let ticket_update = await Weekly_Tickets.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.2.status": "true",
+                }
+              );
+              console.log(ticket_update, "Inside 2");
+            } else {
+              let ticket_update = await Weekly_Tickets.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.2.status": "false",
+                }
+              );
+            }
+          }
+        } else if (j === 3) {
+          if (thirddigit != undefined) {
+            if (
+              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
+            ) {
+              if (price_rate != null) {
+                let pricerate14 = price_rate.priceRate_splitup;
+                pricerate_4 = Array.from(pricerate14);
+                pricerate4 =
+                  parseFloat(pricerate_4[3]) * ticket_rate.ticketRate;
               }
-            );
+              let wallet_find = await Wallet.findOne({
+                userId: parseInt(ticket_data[i].userId),
+              });
+
+              let addon_wallet = await Wallet.findOneAndUpdate(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  amount:
+                    wallet_find.amount + pricerate4,
+                }
+              );
+              let ticket_update = await Weekly_Tickets.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.3.status": "true",
+                }
+              );
+              console.log(ticket_update, "Inside 0");
+            } else {
+              let ticket_update = await Weekly_Tickets.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.3.status": "false",
+                }
+              );
+            }
+
           }
         }
       }
