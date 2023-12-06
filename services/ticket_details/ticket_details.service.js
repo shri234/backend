@@ -11,10 +11,8 @@ const Wallet = require("../../model/wallet");
 const Result = require("../../model/result");
 const PriceRate = require("../../model/price_rate");
 const cron = require("node-cron");
-
-const clients = [];
-const clients1 = [];
-const clients2 = [];
+const monthlyresult = require("../../model/MonthlyResult");
+const weeklyresult = require("../../model/WeeklyResult");
 
 const addTicketDaily = async (req, res) => {
   try {
@@ -89,6 +87,10 @@ const getMinimum = async (req, res) => {
   let digit1 = parseInt(req.query.digit1);
   let digit2 = parseInt(req.query.digit2);
   let digit3 = parseInt(req.query.digit3);
+  let tmp_digit = parseInt(req.query.value1);
+  let tmp_digit1 = parseInt(req.query.value2);
+  let tmp_digit3 = parseInt(req.query.value3);
+  console.log(tmp_digit, tmp_digit1, tmp_digit3);
   const filter_by_value = parseInt(req.query.filter_value);
 
   let start_date = new Date(req.query.date);
@@ -105,13 +107,22 @@ const getMinimum = async (req, res) => {
       firstdigit_arr.push(get_data[i].ticket[0].digit);
     }
 
-    if (digit1 === 2 && get_data[i].ticket[0].digit === filter_by_value) {
+    if (digit1 === 2 && get_data[i].ticket[0].digit === tmp_digit) {
       seconddigit_arr.push(get_data[i].ticket[1].digit);
     }
-    if (digit2 === 3 && get_data[i].ticket[1].digit === filter_by_value) {
+    if (
+      digit2 === 3 &&
+      get_data[i].ticket[0].digit === tmp_digit &&
+      get_data[i].ticket[1].digit === tmp_digit1
+    ) {
       thirddigit_arr.push(get_data[i].ticket[2].digit);
     }
-    if (digit3 === 4 && get_data[i].ticket[2].digit === filter_by_value) {
+    if (
+      digit3 === 4 &&
+      get_data[i].ticket[0].digit === tmp_digit &&
+      get_data[i].ticket[1].digit === tmp_digit1 &&
+      get_data[i].ticket[2].digit === tmp_digit3
+    ) {
       fourthdigit_arr.push(get_data[i].ticket[3].digit);
     }
   }
@@ -328,9 +339,7 @@ const getTickets = async (req, res) => {
     let ticket_count = await Ticket.find({
       userId: req.query.userId,
     }).countDocuments();
-    clients2.forEach((client) => {
-      client.write(`data: ${JSON.stringify(get_tickets)}\n\n`);
-    });
+
     return res.status(200).json({
       response: "Got data successfully",
       data: get_tickets,
@@ -342,139 +351,61 @@ const getTickets = async (req, res) => {
 };
 
 const publish_result = async (req, res) => {
-  let body_data = req.body;
-  let userid;
-  let firstdigit;
-  let seconddigit;
-  let thirddigit;
-  let fourthdigit;
-  let pricerate_1;
-  let pricerate1;
-  let pricerate_2;
-  let pricerate2;
-  let pricerate_3;
-  let pricerate3;
-  let t = 0;
-  let date1 = new Date();
-  let start_date1 = new Date(date1.setHours(date1.getHours() + 5));
-  new Date(date1.setMinutes(date1.getMinutes() + 30));
-  let start_date = new Date(req.query.date);
-  let date = new Date(req.query.date);
+  try {
+    let body_data = req.body;
+    let userid;
+    let firstdigit;
+    let seconddigit;
+    let thirddigit;
+    let fourthdigit;
+    let pricerate_1;
+    let pricerate1;
+    let pricerate_2;
+    let pricerate2;
+    let pricerate_3;
+    let pricerate_4;
+    let pricerate4;
+    let pricerate3;
+    let t = 0;
+    let date1 = new Date();
+    let start_date1 = new Date(date1.setHours(date1.getHours() + 5));
+    new Date(date1.setMinutes(date1.getMinutes() + 30));
+    let start_date = new Date(req.query.date);
+    let date = new Date(req.query.date);
 
-  start_date.setDate(start_date.getDate() - 1);
-  start_date.setHours(17, 0, 0, 0);
-  date.setHours(17, 0, 0, 0);
-  console.log(start_date, date);
-  let ticket_data = await Ticket.find({});
+    start_date.setDate(start_date.getDate() - 1);
+    start_date.setHours(17, 0, 0, 0);
+    date.setHours(17, 0, 0, 0);
+    console.log(start_date, date);
+    let ticket_data = await Ticket.find({});
+    console.log(-1);
+    let price_rate = await PriceRate.findOne({});
+    console.log(0);
+    let ticket_rate = await TicketRate.findOne({});
+    console.log(1);
+    let result_add = await Result.create({
+      result_ticket:
+        req.body[0].digit +
+        req.body[1].digit +
+        req.body[2].digit +
+        req.body[3].digit,
+      CreatedAt: date1,
+    });
 
-  let price_rate = await PriceRate.findOne({});
-
-  let ticket_rate = await TicketRate.findOne({});
-
-  let result_add = await Result.create({
-    result_ticket:
-      req.body[0].digit +
-      req.body[1].digit +
-      req.body[2].digit +
-      req.body[3].digit,
-    CreatedAt: date1,
-  });
-
-  for (let i = 0; i < ticket_data.length; i++) {
-    userid = ticket_data[i].userId;
-    for (let j = 0; j < 4; j++) {
-      if (j === 0) {
-        if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-          firstdigit = req.body[j].digit;
-          if (price_rate != null) {
-            let pricerate11 = price_rate.priceRate_splitup;
-            pricerate_1 = Array.from(pricerate11);
-            pricerate1 =
-              parseInt(pricerate_1[0]) * parseInt(ticket_rate.ticketRate);
-          }
-
-          let wallet_find = await Wallet.findOne({
-            userId: parseInt(ticket_data[i].userId),
-          });
-
-          let addon_wallet = await Wallet.findOneAndUpdate(
-            {
-              userId: parseInt(ticket_data[i].userId),
-            },
-            {
-              amount: wallet_find.amount + pricerate1,
-            }
-          );
-
-          let ticket_update = await Ticket.findOneAndUpdate(
-            {
-              ticketId: ticket_data[i].ticketId,
-            },
-            {
-              "ticket.0.status": "true",
-            }
-          );
-        } else {
-          let ticket_update = await Ticket.findOneAndUpdate(
-            {
-              ticketId: ticket_data[i].ticketId,
-            },
-            {
-              "ticket.0.status": "false",
-            }
-          );
-        }
-      } else if (j === 1) {
-        if (firstdigit !== undefined) {
+    console.log(price_rate.priceRate_splitup, "pricerate");
+    for (let i = 0; i < ticket_data.length; i++) {
+      userid = ticket_data[i].userId;
+      for (let j = 0; j < 4; j++) {
+        if (j === 0) {
           if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            seconddigit = req.body[j].digit;
+            firstdigit = req.body[j].digit;
             if (price_rate != null) {
-              let pricerate12 = price_rate.priceRate_splitup;
-              pricerate_2 = Array.from(pricerate12);
-              pricerate2 = pricerate_2[1] * ticket_rate.ticketRate;
+              let pricerate11 = price_rate.priceRate_splitup;
+              pricerate_1 = Array.from(pricerate11);
+              pricerate1 =
+                parseFloat(pricerate_1[0]) * parseInt(ticket_rate.ticketRate);
             }
 
-            let wallet_find = await Wallet.findOne({
-              userId: parseInt(ticket_data[i].userId),
-            });
-            console.log(typeof wallet_find.amount);
-            let addon_wallet = await Wallet.findOneAndUpdate(
-              {
-                userId: parseInt(ticket_data[i].userId),
-              },
-              {
-                amount: wallet_find.amount + pricerate2,
-              }
-            );
-            let ticket_update = await Ticket.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.1.status": "true",
-              }
-            );
-            console.log(ticket_update, "Inside 1");
-          } else {
-            let ticket_update = await Ticket.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.1.status": "false",
-              }
-            );
-          }
-        }
-      } else if (j === 2) {
-        if (seconddigit != undefined) {
-          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            thirddigit = req.body[j].digit;
-            if (price_rate != null) {
-              let pricerate13 = price_rate.priceRate_splitup;
-              pricerate_3 = Array.from(pricerate13);
-              pricerate3 = pricerate_3[2] * ticket_rate.ticketRate;
-            }
             let wallet_find = await Wallet.findOne({
               userId: parseInt(ticket_data[i].userId),
             });
@@ -484,80 +415,185 @@ const publish_result = async (req, res) => {
                 userId: parseInt(ticket_data[i].userId),
               },
               {
-                amount: wallet_find.amount + pricerate3,
+                amount:
+                  wallet_find.amount + price_rate !== null ? pricerate1 : 0,
               }
             );
+
             let ticket_update = await Ticket.findOneAndUpdate(
               {
                 ticketId: ticket_data[i].ticketId,
               },
               {
-                "ticket.2.status": "true",
+                "ticket.0.status": "true",
               }
             );
-            console.log(ticket_update, "Inside 2");
           } else {
             let ticket_update = await Ticket.findOneAndUpdate(
               {
                 ticketId: ticket_data[i].ticketId,
               },
               {
-                "ticket.2.status": "false",
+                "ticket.0.status": "false",
               }
             );
           }
-        }
-      } else if (j === 3) {
-        if (thirddigit != undefined) {
-          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            let ticket_update = await Ticket.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.3.status": "true",
+        } else if (j === 1) {
+          if (firstdigit !== undefined) {
+            if (
+              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
+            ) {
+              seconddigit = req.body[j].digit;
+              if (price_rate != null) {
+                let pricerate12 = price_rate.priceRate_splitup;
+                pricerate_2 = Array.from(pricerate12);
+                pricerate2 =
+                  parseFloat(pricerate_2[1]) * ticket_rate.ticketRate;
               }
-            );
-            console.log(ticket_update, "Inside 0");
-          } else {
-            let ticket_update = await Ticket.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.3.status": "false",
+
+              let wallet_find = await Wallet.findOne({
+                userId: parseInt(ticket_data[i].userId),
+              });
+              let addon_wallet = await Wallet.findOneAndUpdate(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  amount:
+                    wallet_find.amount + price_rate !== null ? pricerate2 : 0,
+                }
+              );
+              let ticket_update = await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.1.status": "true",
+                }
+              );
+            } else {
+              let ticket_update = await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.1.status": "false",
+                }
+              );
+            }
+          }
+        } else if (j === 2) {
+          if (seconddigit != undefined) {
+            if (
+              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
+            ) {
+              thirddigit = req.body[j].digit;
+              if (price_rate != null) {
+                let pricerate13 = price_rate.priceRate_splitup;
+                pricerate_3 = Array.from(pricerate13);
+                pricerate3 =
+                  parseFloat(pricerate_3[2]) * ticket_rate.ticketRate;
               }
-            );
+              let wallet_find = await Wallet.findOne({
+                userId: parseInt(ticket_data[i].userId),
+              });
+
+              let addon_wallet = await Wallet.findOneAndUpdate(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  amount:
+                    wallet_find.amount + price_rate !== null ? pricerate3 : 0,
+                }
+              );
+
+              let ticket_update = await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.2.status": "true",
+                }
+              );
+            } else {
+              let ticket_update = await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.2.status": "false",
+                }
+              );
+            }
+          }
+        } else if (j === 3) {
+          if (thirddigit != undefined) {
+            if (
+              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
+            ) {
+              if (price_rate != null) {
+                let pricerate14 = price_rate.priceRate_splitup;
+                pricerate_4 = Array.from(pricerate14);
+                pricerate4 =
+                  parseFloat(pricerate_3[3]) * ticket_rate.ticketRate;
+              }
+              let wallet_find = await Wallet.findOne({
+                userId: parseInt(ticket_data[i].userId),
+              });
+
+              let addon_wallet = await Wallet.findOneAndUpdate(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  amount:
+                    wallet_find.amount + price_rate !== null ? pricerate4 : 0,
+                }
+              );
+
+              let ticket_update = await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.3.status": "true",
+                }
+              );
+            } else {
+              let ticket_update = await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.3.status": "false",
+                }
+              );
+            }
           }
         }
       }
-    }
-    if (
-      firstdigit != undefined &&
-      seconddigit != undefined &&
-      thirddigit != undefined &&
-      fourthdigit != undefined
-    ) {
-      t += 1;
+      if (
+        firstdigit != undefined &&
+        seconddigit != undefined &&
+        thirddigit != undefined &&
+        fourthdigit != undefined
+      ) {
+        t += 1;
+      }
+
+      firstdigit = undefined;
+      seconddigit = undefined;
+      thirddigit = undefined;
+      fourthdigit = undefined;
     }
 
-    firstdigit = undefined;
-    seconddigit = undefined;
-    thirddigit = undefined;
-    fourthdigit = undefined;
+    return res
+      .status(200)
+      .json({ response: "Published result successfully", Winners: t });
+  } catch (err) {
+    console.log(err);
   }
-  console.log(firstdigit, seconddigit, thirddigit, fourthdigit);
-  clients1.forEach((client) => {
-    client.write(`data: ${JSON.stringify(t)}\n\n`);
-  });
-  await getResult();
-  clients2.forEach((client) => {
-    client.write(`data: ${JSON.stringify(t)}\n\n`);
-  });
-  await getTickets();
-  return res
-    .status(200)
-    .json({ response: "Published result successfully", Winners: t });
 };
 
 const getHistories = async (req, res) => {
@@ -688,10 +724,6 @@ const addWallettAmount = async (req, res) => {
       CreatedAt: date,
     });
 
-    clients.forEach((client) => {
-      client.write(`data: ${JSON.stringify(wallet_history)}\n\n`);
-    });
-
     await getWall(parseInt(req.body.userId));
   } else {
     add_amount = await Wallet.create({
@@ -721,11 +753,8 @@ const addTicketCount = async (req, res) => {
       let find_wallet = await Wallet.findOne({
         userId: req.query.userId,
       });
-      console.log(
-        find_wallet.alreadyDailyTicketCount,
-        req.query.userId,
-        find_wallet
-      );
+
+      
       if (find_wallet.alreadyDailyTicketCount <= 15) {
         let add_count = await Wallet.updateOne(
           {
@@ -829,9 +858,6 @@ const getWall = async (userId) => {
       userId: userId,
     });
 
-    clients.forEach((client) => {
-      client.write(`data: ${JSON.stringify(get_wallet)}\n\n`);
-    });
     return get_wallet;
   } catch (err) {
     console.log(err);
@@ -897,9 +923,7 @@ const getPriceRate = async (req, res) => {
 const getResult = async (req, res) => {
   try {
     let data_get = await Result.findOne({});
-    clients1.forEach((client) => {
-      client.write(`data: ${JSON.stringify(data_get)}\n\n`);
-    });
+
     res.status(200).json({ response: "Got data successfully", data: data_get });
   } catch (error) {
     console.error(error);
@@ -941,43 +965,24 @@ const callSecondApi = async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
-  clients.push(res);
-
   res.write(`data: ${JSON.stringify({ message: "Connected" })}\n\n`);
-  req.on("close", () => {
-    const index = clients.indexOf(res);
-    if (index !== -1) {
-      clients.splice(index, 1);
-    }
-  });
+  req.on("close", () => {});
 };
 
 const callSecondApi1 = async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
-  clients1.push(res);
   res.write(`data: ${JSON.stringify({ message: "Connected" })}\n\n`);
-  req.on("close", () => {
-    const index = clients1.indexOf(res);
-    if (index !== -1) {
-      clients1.splice(index, 1);
-    }
-  });
+  req.on("close", () => {});
 };
 
 const callSecondApi2 = async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
-  clients2.push(res);
   res.write(`data: ${JSON.stringify({ message: "Connected" })}\n\n`);
-  req.on("close", () => {
-    const index = clients2.indexOf(res);
-    if (index !== -1) {
-      clients2.splice(index, 1);
-    }
-  });
+  req.on("close", () => {});
 };
 
 cron.schedule("15 02 * * *", async () => {

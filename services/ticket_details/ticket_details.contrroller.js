@@ -29,7 +29,7 @@ router.post(
   monthly_ticket.monthlyPublishTicketResult
 );
 router.post("/add-monthly-ticket-rate", monthly_ticket.addMonthlyTicketRate);
-router.get("/add-monthly-ticket-count", monthly_ticket.addMonthlyTicketCount);
+router.post("/add-monthly-ticket-count", monthly_ticket.addMonthlyTicketCount);
 router.get("/get-monthly-price-rate", monthly_ticket.getMonthlyPriceRate);
 router.post("/add-monthly-price-rate", monthly_ticket.addMonthlyPriceRate);
 router.get("/get-monthly-winner", monthly_ticket.getMonthlyWinner);
@@ -40,7 +40,7 @@ router.get(
 router.get("/get-monthly-result", monthly_ticket.getMonthlyResult);
 
 // dayily api's
-router.post("/addTicket", tickets.addTicketDaily);
+router.post("/add-daily-ticket", tickets.addTicketDaily);
 router.get("/get-daily-minimum", tickets.getMinimum);
 router.get("/get-daily-tickets", tickets.getTickets);
 router.post("/publish-daily-result", tickets.publish_result);

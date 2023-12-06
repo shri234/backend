@@ -11,6 +11,7 @@ let Tickets = new Schema({
         digit: {
           type: Number,
         },
+
         status: {
           type: String,
         },
