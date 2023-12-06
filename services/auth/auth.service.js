@@ -22,8 +22,7 @@ const addUser = async (req, res) => {
     console.log(is_valid_referral_id, req.body.referralId);
 
     if (
-      user_find == undefined &&
-      (req.body.referralId === null || is_valid_referral_id !== null)
+      user_find == undefined 
     ) {
       const user = await User.create({
         username: req.body.username,

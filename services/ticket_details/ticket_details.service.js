@@ -13,6 +13,10 @@ const PriceRate = require("../../model/price_rate");
 const cron = require("node-cron");
 const monthlyresult = require("../../model/MonthlyResult");
 const weeklyresult = require("../../model/WeeklyResult");
+const DailyTicketCount=require("../../model/daily_ticket_count");
+const DailyHistory=require("../../model/daily_master_history")
+const WeeklyTicketCount=require("../../model/weekly_ticket_count");
+
 
 const addTicketDaily = async (req, res) => {
   try {
@@ -23,17 +27,17 @@ const addTicketDaily = async (req, res) => {
       userId: parseInt(req.body.userId),
     });
 
-    let wallet_u = await Wallet.findOne({
+    let wallet_u = await DailyTicketCount.findOne({
       userId: parseInt(req.body.userId),
     });
     if (wallet_u.dailyTicketCount > 0) {
-      let wallet_update = await Wallet.updateOne(
+      let wallet_update = await DailyTicketCount.updateOne(
         {
           userId: parseInt(req.body.userId),
         },
         {
           dailyTicketCount: wallet_u.dailyTicketCount - 1,
-          ticketCount: wallet_u.ticketCount - 1,
+        
         }
       );
       let date = new Date();
@@ -55,6 +59,13 @@ const addTicketDaily = async (req, res) => {
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
       id: id,
+    });
+    let add_history = await DailyHistory.create({
+      username: user_find.username,
+      userId: parseInt(req.body.userId),
+      ticket: req.body.ticket,
+      id: id,
+      CreatedAt:date
     });
     res.status(200).json({ response: "Data inserted successfully" });
   } catch (error) {
@@ -677,6 +688,7 @@ const addWalletAmount = async (req, res) => {
           amount: parseInt(req.body.amount),
         }
       );
+      
     } else {
       wallet = await Wallet.create({
         amount: parseInt(req.body.amount),
@@ -691,6 +703,7 @@ const addWalletAmount = async (req, res) => {
         status: true,
         CreatedAt: date,
       });
+    
     }
     return res.status(200).json({ response: "Data inserted successfully" });
   } catch (err) {
@@ -723,6 +736,7 @@ const addWallettAmount = async (req, res) => {
       status: true,
       CreatedAt: date,
     });
+   
 
     await getWall(parseInt(req.body.userId));
   } else {
@@ -740,6 +754,18 @@ const addWallettAmount = async (req, res) => {
       status: true,
       CreatedAt: date,
     });
+    let count_create=await DailyTicketCount.create({
+      userId:parseInt(req.body.userId),
+      CreatedAt: date,
+    })
+    let monthlycount_create=await DailyTicketCount.create({
+      userId:parseInt(req.body.userId),
+      CreatedAt: date,
+    })
+    let weeklycount_create=await WeeklyTicketCount.create({
+      userId:parseInt(req.body.userId),
+      CreatedAt: date,
+    })
   }
   return res.status(200).json({ response: "Data inserted successfully" });
 };
@@ -750,30 +776,25 @@ const addTicketCount = async (req, res) => {
     const ticketId = await getNextSequenceValue("ticketId");
     console.log(req.body, "request");
     for (let i = 0; i < parseInt(req.body.ticketCount); i++) {
-      let find_wallet = await Wallet.findOne({
+      let find_wallet = await DailyTicketCount.findOne({
         userId: req.query.userId,
       });
 
       if (find_wallet.alreadyDailyTicketCount <= 15) {
-        let add_count = await Wallet.updateOne(
+        let add_count = await DailyTicketCount.updateOne(
           {
             userId: req.query.userId,
-          },
-          {
+          },{
             dailyTicketCount:
               find_wallet.dailyTicketCount + parseInt(req.body.ticketCount),
             alreadyDailyTicketCount:
               find_wallet.alreadyDailyTicketCount +
               parseInt(req.body.ticketCount),
-
-            ticketCount: parseInt(req.body.ticketCount),
-            alreadyTicketCount:
-              find_wallet.alreadyTicketCount + parseInt(req.body.ticketCount),
           }
         );
         return res
           .status(200)
-          .json({ response: "updated ticket count successfully" });
+          .json({ response: "added ticket count successfully" });
       }
     }
   } catch (err) {
@@ -782,6 +803,21 @@ const addTicketCount = async (req, res) => {
     console.error("Error", err);
   }
 };
+
+
+const getDailyTicketCount=async(req,res)=>{
+  let start_date = new Date(req.query.date);
+  let date = new Date(req.query.date);
+
+  try {
+    let get_ticket_rate = await DailyTicketCount.findOne({});
+    return res
+      .status(200)
+      .json({ response: "Got Data successfully", data: get_ticket_rate });
+  } catch (err) {
+    console.error("Error", err);
+  }
+}
 
 const getTicketRate = async (req, res) => {
   let start_date = new Date(req.query.date);
@@ -836,11 +872,11 @@ const getBuyedTicketCount = async (req, res) => {
   try {
     let get_ticket_count;
     if (req.query) {
-      get_ticket_count = await Wallet.findOne({
+      get_ticket_count = await DailyTicketCount.findOne({
         userId: req.query.userId,
       });
     } else {
-      get_ticket_count = await Wallet.findOne({
+      get_ticket_count = await DailyTicketCount.findOne({
         userId: userId,
       });
     }
@@ -850,6 +886,18 @@ const getBuyedTicketCount = async (req, res) => {
     console.log(err);
   }
 };
+
+const getWalletAmount=async (req,res)=>{
+  try {
+    let get_wallet = await Wallet.findOne({
+      userId: req.query.userId,
+    });
+
+    res.status(200).json({data:get_wallet});
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 const getWall = async (userId) => {
   try {
@@ -934,7 +982,7 @@ const getHistorry = async (req, res) => {
     let get_all = [];
     let pageno = req.query.pageno;
     let skip_page = pageno * 10;
-    let get_Histories = await History.find({}).skip(skip_page).limit(10);
+    let get_Histories = await DailyHistory.find({}).skip(skip_page).limit(10);
     for (let i = 0; i < get_Histories.length; i++) {
       let find_user = await User.findOne({
         username: get_Histories[i].username,
@@ -948,7 +996,7 @@ const getHistorry = async (req, res) => {
       };
       get_all.push(all_date);
     }
-    let data_count = await History.find().countDocuments();
+    let data_count = await DailyHistory.find().countDocuments();
     res.status(200).json({
       response: "Got data successfully",
       data: get_all,
@@ -1026,4 +1074,6 @@ module.exports = {
   callSecondApi,
   callSecondApi1,
   callSecondApi2,
+  getDailyTicketCount,
+  getWalletAmount
 };
