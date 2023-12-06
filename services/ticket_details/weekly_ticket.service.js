@@ -409,7 +409,7 @@ const weeklyPublishTicketResult = async (req, res) => {
               },
               {
                 amount:
-                  wallet_find.amount + price_rate !== null ? pricerate1 : 0,
+                  wallet_find.amount + pricerate1,
               }
             );
 
@@ -453,7 +453,7 @@ const weeklyPublishTicketResult = async (req, res) => {
                 },
                 {
                   amount:
-                    wallet_find.amount + price_rate !== null ? pricerate2 : 0,
+                    wallet_find.amount + pricerate2,
                 }
               );
               let ticket_update = await Weekly_Tickets.findOneAndUpdate(
@@ -497,7 +497,7 @@ const weeklyPublishTicketResult = async (req, res) => {
                 },
                 {
                   amount:
-                    wallet_find.amount + price_rate !== null ? pricerate3 : 0,
+                    wallet_find.amount + pricerate3,
                 }
               );
               let ticket_update = await Weekly_Tickets.findOneAndUpdate(
@@ -529,7 +529,7 @@ const weeklyPublishTicketResult = async (req, res) => {
                 let pricerate14 = price_rate.priceRate_splitup;
                 pricerate_4 = Array.from(pricerate14);
                 pricerate4 =
-                  parseFloat(pricerate_3[3]) * ticket_rate.ticketRate;
+                  parseFloat(pricerate_4[3]) * ticket_rate.ticketRate;
               }
               let wallet_find = await Wallet.findOne({
                 userId: parseInt(ticket_data[i].userId),
@@ -541,7 +541,7 @@ const weeklyPublishTicketResult = async (req, res) => {
                 },
                 {
                   amount:
-                    wallet_find.amount + price_rate !== null ? pricerate4 : 0,
+                    wallet_find.amount + pricerate4,
                 }
               );
               let ticket_update = await Weekly_Tickets.findOneAndUpdate(
