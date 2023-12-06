@@ -9,6 +9,10 @@ const weeklyticketrate = require("../../model/WeeklyTicketRate");
 const Counter = require("../../model/Counter");
 const WeeklyHistory=require("../../model/weekly_master_history");
 const WeeklyTicketCount=require("../../model/weekly_ticket_count");
+const moment = require("moment");
+const cron=require("node-cron")
+
+
 // create Weekly_Tickets
 const addTicketWeekly = async (req, res) => {
   try {
@@ -775,6 +779,22 @@ const getWeeklyHistory = async (req, res) => {
     console.error(error);
   }
 };
+
+cron.schedule("0 19 * * FRI", async () => {
+  console.log("cron running at 7 pm everyday");
+ await Weekly_Tickets.deleteMany({});
+await weeklyticketrate.deleteMany({});
+await PriceRate.deleteMany({});
+await WeeklyTicketCount.updateMany({
+  alreadyWeeklyTicketCount:0,
+  weeklyTicketCount:0
+})
+});
+
+cron.schedule("0 20 * * FRI", async () => {
+  console.log("cron running at 8 pm everyday");
+ await WeeklyResult.deleteMany({});
+});
 
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(

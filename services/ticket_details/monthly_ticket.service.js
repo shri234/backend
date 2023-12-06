@@ -7,6 +7,10 @@ const PriceRate = require("../../model/MonthlyPriceRate");
 const Monthly_Tickets = require("../../model/monthly_tickets");
 const monthlyticketrate = require("../../model/MonthlyTicketRate");
 const Counter = require("../../model/Counter");
+const MonthlyHistory=require("../../model/monthly_master_history");
+const MonthlyTicketCount=require("../../model/monthly_ticket_count");
+const cron=require("node-cron")
+
 // create Monthly_Tickets
 const addTicketMonthly = async (req, res) => {
   try {
@@ -17,17 +21,17 @@ const addTicketMonthly = async (req, res) => {
       userId: parseInt(req.body.userId),
     });
 
-    let wallet_u = await Wallet.findOne({
+    let wallet_u = await MonthlyTicketCount.findOne({
       userId: parseInt(req.body.userId),
     });
     if (wallet_u.monthlyTicketCount > 0) {
-      let wallet_update = await Wallet.updateOne(
+      let wallet_update = await MonthlyTicketCount.updateOne(
         {
           userId: parseInt(req.body.userId),
         },
         {
           monthlyTicketCount: wallet_u.monthlyTicketCount - 1,
-          ticketCount: wallet_u.ticketCount - 1,
+      
         }
       );
       let date = new Date();
@@ -65,12 +69,12 @@ const addMonthlyTicketCount = async (req, res) => {
     const ticketId = await getNextSequenceValue("ticketId");
 
     for (let i = 0; i < parseInt(req.body.ticketCount); i++) {
-      let find_wallet = await Wallet.findOne({
+      let find_wallet = await MonthlyTicketCount.findOne({
         userId: req.query.userId,
       });
 
       if (find_wallet.alreadyMonthlyTicketCount <= 15) {
-        let add_count = await Wallet.updateOne(
+        let add_count = await MonthlyTicketCount.updateOne(
           {
             userId: req.query.userId,
           },
@@ -441,7 +445,7 @@ const monthlyPublishTicketResult = async (req, res) => {
               userId: parseInt(ticket_data[i].userId),
             },
             {
-              amount: wallet_find.amount + price_rate !== null ? pricerate1 : 0,
+              amount: wallet_find.amount + pricerate1,
             }
           );
 
@@ -483,7 +487,7 @@ const monthlyPublishTicketResult = async (req, res) => {
               },
               {
                 amount:
-                  wallet_find.amount + price_rate !== null ? pricerate2 : 0,
+                  wallet_find.amount + pricerate2,
               }
             );
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
@@ -525,7 +529,7 @@ const monthlyPublishTicketResult = async (req, res) => {
               },
               {
                 amount:
-                  wallet_find.amount + price_rate !== null ? pricerate3 : 0,
+                  wallet_find.amount +pricerate3,
               }
             );
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
@@ -554,7 +558,7 @@ const monthlyPublishTicketResult = async (req, res) => {
             if (price_rate != null) {
               let pricerate14 = price_rate.priceRate_splitup;
               pricerate_4 = Array.from(pricerate14);
-              pricerate4 = parseFloat(pricerate_3[3]) * ticket_rate.ticketRate;
+              pricerate4 = parseFloat(pricerate_4[3]) * ticket_rate.ticketRate;
             }
             let wallet_find = await Wallet.findOne({
               userId: parseInt(ticket_data[i].userId),
@@ -566,7 +570,7 @@ const monthlyPublishTicketResult = async (req, res) => {
               },
               {
                 amount:
-                  wallet_find.amount + price_rate !== null ? pricerate4 : 0,
+                  wallet_find.amount + pricerate4,
               }
             );
 
@@ -617,11 +621,11 @@ const getMonthlyBuyedTicketCount = async (req, res) => {
   try {
     let get_ticket_count;
     if (req.query) {
-      get_ticket_count = await Wallet.findOne({
+      get_ticket_count = await MonthlyTicketCount.findOne({
         userId: req.query.userId,
       });
     } else {
-      get_ticket_count = await Wallet.findOne({
+      get_ticket_count = await MonthlyTicketCount.findOne({
         userId: userId,
       });
     }
@@ -736,6 +740,48 @@ const getMonthlyResult = async (req, res) => {
   }
 };
 
+const getMonthlyHistory = async (req, res) => {
+  try {
+    let get_all = [];
+    let pageno = req.query.pageno;
+    let skip_page = pageno * 10;
+    let get_Histories = await MonthlyHistory.find({}).skip(skip_page).limit(10);
+    for (let i = 0; i < get_Histories.length; i++) {
+      let find_user = await User.findOne({
+        username: get_Histories[i].username,
+      });
+      let all_date = {
+        CreatedAt: moment(get_Histories[i].CreatedAt).format("DD/MM/YYYY"),
+        ticket: get_Histories[i].ticket,
+        id: get_Histories[i].id,
+        ticketCount: get_Histories[i].ticketCount,
+        username: get_Histories[i].username + `(${find_user.referralId})`,
+      };
+      get_all.push(all_date);
+    }
+    let data_count = await MonthlyHistory.find().countDocuments();
+    res.status(200).json({
+      response: "Got data successfully",
+      data: get_all,
+      count: data_count,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+cron.schedule("0 0 0 28-31 * *", async () => {
+  console.log("cron running at  every last day of the month ");
+ await Monthly_Tickets.deleteMany({});
+await monthlyticketrate.deleteMany({});
+await PriceRate.deleteMany({});
+});
+
+cron.schedule("0 0 0 28-31 * *", async () => {
+  console.log("cron running at every last day of the month");
+ await Result.deleteMany({});
+});
+
 async function getNextSequenceValue(sequenceName) {
   const counter = await Counter.findOneAndUpdate(
     { _id: sequenceName },
@@ -758,4 +804,5 @@ module.exports = {
   getMonthlyWinner,
   getMonthlyBuyedTicketCount,
   getMonthlyResult,
+  getMonthlyHistory
 };

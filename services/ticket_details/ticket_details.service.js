@@ -16,6 +16,7 @@ const weeklyresult = require("../../model/WeeklyResult");
 const DailyTicketCount=require("../../model/daily_ticket_count");
 const DailyHistory=require("../../model/daily_master_history")
 const WeeklyTicketCount=require("../../model/weekly_ticket_count");
+const MonthlyTicketCount=require("../../model/monthly_ticket_count")
 
 
 const addTicketDaily = async (req, res) => {
@@ -427,7 +428,7 @@ const publish_result = async (req, res) => {
               },
               {
                 amount:
-                  wallet_find.amount + pricerate1,
+                  wallet_find.amount + pricerate1, 
               }
             );
 
@@ -758,7 +759,7 @@ const addWallettAmount = async (req, res) => {
       userId:parseInt(req.body.userId),
       CreatedAt: date,
     })
-    let monthlycount_create=await DailyTicketCount.create({
+    let monthlycount_create=await MonthlyTicketCount.create({
       userId:parseInt(req.body.userId),
       CreatedAt: date,
     })
@@ -1034,9 +1035,13 @@ const callSecondApi2 = async (req, res) => {
 
 cron.schedule("0 18 * * *", async () => {
   console.log("cron running at 6 pm everyday");
-  let delete_tickets = await Ticket.deleteMany({});
-  let delete_ticketrate = await TicketRate.deleteMany({});
-  let delete_priceRate = await PriceRate.deleteMany({});
+ await Ticket.deleteMany({});
+ await TicketRate.deleteMany({});
+ await PriceRate.deleteMany({});
+  await DailyTicketCount.updateMany({
+    alreadyDailyTicketCount:0,
+    dailyTicketCount:0
+  })
 });
 
 cron.schedule("0 19 * * *", async () => {
