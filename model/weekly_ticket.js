@@ -11,6 +11,7 @@ let Weekly_Tickets = new Schema({
         digit: {
           type: Number,
         },
+
         status: {
           type: String,
         },

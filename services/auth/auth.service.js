@@ -14,9 +14,11 @@ const addUser = async (req, res) => {
     let user_find = await User.findOne({
       username: req.body.username,
     });
+
     const is_valid_referral_id = await User.findOne({
       referralId: req.body.referralId,
     });
+
     console.log(is_valid_referral_id, req.body.referralId);
 
     if (
@@ -168,6 +170,7 @@ const addAgent = async (req, res) => {
       email: req.body.email,
       mobileNumber: req.body.mobileNumber,
       agentId: id,
+      referralId: id,
     });
 
     return res.status(200).json(user);
@@ -190,7 +193,10 @@ const getAllUsers = async (req, res) => {
   try {
     let pageno = req.query.pageno;
     let skip_page = pageno * 10;
-    const user = await User.find({ referralId: req.query.referralId })
+    const user = await User.find({
+      referralId: req.query.referralId,
+      role: "user",
+    })
       .skip(skip_page)
       .limit(10);
     const user_count = await User.find({

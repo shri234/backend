@@ -5,12 +5,8 @@ const Wallet = require("../../model/wallet");
 const Result = require("../../model/MonthlyResult");
 const PriceRate = require("../../model/MonthlyPriceRate");
 const Monthly_Tickets = require("../../model/monthly_tickets");
-
-const client_add_ticket_sse = [];
-
-const clients1 = [];
-const clients2 = [];
-
+const monthlyticketrate = require("../../model/MonthlyTicketRate");
+const Counter = require("../../model/Counter");
 // create Monthly_Tickets
 const addTicketMonthly = async (req, res) => {
   try {
@@ -65,7 +61,9 @@ const addTicketMonthly = async (req, res) => {
 const addMonthlyTicketCount = async (req, res) => {
   try {
     let start_date = new Date(req.query.date);
+    console.log(req.body.ticketCount);
     const ticketId = await getNextSequenceValue("ticketId");
+
     for (let i = 0; i < parseInt(req.body.ticketCount); i++) {
       let find_wallet = await Wallet.findOne({
         userId: req.query.userId,
@@ -78,7 +76,7 @@ const addMonthlyTicketCount = async (req, res) => {
           },
           {
             monthlyTicketCount:
-              monthlyTicketCount + parseInt(req.body.ticketCount),
+              find_wallet.monthlyTicketCount + parseInt(req.body.ticketCount),
             alreadyMonthlyTicketCount:
               find_wallet.alreadyMonthlyTicketCount +
               parseInt(req.body.ticketCount),
@@ -101,11 +99,6 @@ const addMonthlyTicketCount = async (req, res) => {
   }
 };
 
-// sse
-const addTicketMonthlySse = async (req, res) => {
-  client_add_ticket_sse;
-};
-
 // Get ticket's
 const getMonthlyTickets = async (req, res) => {
   try {
@@ -121,9 +114,7 @@ const getMonthlyTickets = async (req, res) => {
     let ticket_count = await Monthly_Tickets.find({
       userId: req.query.userId,
     }).countDocuments();
-    clients2.forEach((client) => {
-      client.write(`data: ${JSON.stringify(get_tickets)}\n\n`);
-    });
+
     return res.status(200).json({
       response: "Got data successfully",
       data: get_tickets,
@@ -398,6 +389,8 @@ const monthlyPublishTicketResult = async (req, res) => {
   let pricerate2;
   let pricerate_3;
   let pricerate3;
+  let pricerate_4;
+  let pricerate4;
   let t = 0;
   let date1 = new Date();
   let start_date1 = new Date(date1.setHours(date1.getHours() + 5));
@@ -448,7 +441,7 @@ const monthlyPublishTicketResult = async (req, res) => {
               userId: parseInt(ticket_data[i].userId),
             },
             {
-              amount: wallet_find.amount + pricerate1,
+              amount: wallet_find.amount + price_rate !== null ? pricerate1 : 0,
             }
           );
 
@@ -489,7 +482,8 @@ const monthlyPublishTicketResult = async (req, res) => {
                 userId: parseInt(ticket_data[i].userId),
               },
               {
-                amount: wallet_find.amount + pricerate2,
+                amount:
+                  wallet_find.amount + price_rate !== null ? pricerate2 : 0,
               }
             );
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
@@ -530,7 +524,8 @@ const monthlyPublishTicketResult = async (req, res) => {
                 userId: parseInt(ticket_data[i].userId),
               },
               {
-                amount: wallet_find.amount + pricerate3,
+                amount:
+                  wallet_find.amount + price_rate !== null ? pricerate3 : 0,
               }
             );
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
@@ -556,6 +551,25 @@ const monthlyPublishTicketResult = async (req, res) => {
       } else if (j === 3) {
         if (thirddigit != undefined) {
           if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
+            if (price_rate != null) {
+              let pricerate14 = price_rate.priceRate_splitup;
+              pricerate_4 = Array.from(pricerate14);
+              pricerate4 = parseFloat(pricerate_3[3]) * ticket_rate.ticketRate;
+            }
+            let wallet_find = await Wallet.findOne({
+              userId: parseInt(ticket_data[i].userId),
+            });
+
+            let addon_wallet = await Wallet.findOneAndUpdate(
+              {
+                userId: parseInt(ticket_data[i].userId),
+              },
+              {
+                amount:
+                  wallet_find.amount + price_rate !== null ? pricerate4 : 0,
+              }
+            );
+
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
               {
                 ticketId: ticket_data[i].ticketId,
@@ -641,7 +655,8 @@ const getMonthlyTicketRate = async (req, res) => {
   let date = new Date(req.query.date);
 
   try {
-    let get_ticket_rate = await Monthly_Tickets.findOne({});
+    let get_ticket_rate = await monthlyticketrate.findOne({});
+
     return res
       .status(200)
       .json({ response: "Got Data successfully", data: get_ticket_rate });
@@ -720,6 +735,15 @@ const getMonthlyResult = async (req, res) => {
     console.error(error);
   }
 };
+
+async function getNextSequenceValue(sequenceName) {
+  const counter = await Counter.findOneAndUpdate(
+    { _id: sequenceName },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  return counter.seq;
+}
 
 module.exports = {
   addTicketMonthly,
