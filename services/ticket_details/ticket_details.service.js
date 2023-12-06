@@ -364,8 +364,8 @@ const publish_result = async (req, res) => {
     let pricerate2;
     let pricerate_3;
     let pricerate_4;
-    let pricerate3;
     let pricerate4;
+    let pricerate3;
     let t = 0;
     let date1 = new Date();
     let start_date1 = new Date(date1.setHours(date1.getHours() + 5));
