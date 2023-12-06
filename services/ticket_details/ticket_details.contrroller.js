@@ -18,13 +18,14 @@ router.post("/add-weekly-price-rate", weekly_ticket.addWeeklyPriceRate);
 router.get("/get-weekly-winner", weekly_ticket.getWeeklyWinner);
 router.get("/get-weekly-result", weekly_ticket.getWeeklyResult);
 router.get("/get-weekly-ticket-count", weekly_ticket.getWeeklyBuyedTicketCount);
-router.get("/getWeeklyHistory", weekly_ticket.getWeeklyHistory);
+router.get("/get-all-weekly-history", weekly_ticket.getWeeklyHistory);
 
 // monthly api's
 router.post("/add-monthly-ticket", monthly_ticket.addTicketMonthly);
 router.get("/get-monthly-tickets", monthly_ticket.getMonthlyTickets);
 router.get("/get-monthly-ticket-rate", monthly_ticket.getMonthlyTicketRate);
 router.get("/get-monthly-minimum", monthly_ticket.getMinimumMonthlyTicket);
+router.get("/get-all-monthly-history", monthly_ticket.getMonthlyHistory);
 router.post(
   "/publish-monthly-result",
   monthly_ticket.monthlyPublishTicketResult
@@ -57,7 +58,7 @@ router.get("/get-daily-winner", tickets.getWinner);
 router.put("/add-daily-price-rate", tickets.updatePriceRate);
 router.get("/get-daily-price-rate", tickets.getPriceRate);
 router.get("/get-daily-result", tickets.getResult);
-router.get("/getAllHistory", tickets.getHistorry);
+router.get("/get-all-daily-history", tickets.getHistorry);
 router.get("/getDailyTicketCount",tickets.getDailyTicketCount);
 router.get("/getWalletAmount",tickets.getWalletAmount);
 

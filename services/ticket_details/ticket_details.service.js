@@ -16,6 +16,7 @@ const weeklyresult = require("../../model/WeeklyResult");
 const DailyTicketCount=require("../../model/daily_ticket_count");
 const DailyHistory=require("../../model/daily_master_history")
 const WeeklyTicketCount=require("../../model/weekly_ticket_count");
+const MonthlyTicketCount=require("../../model/monthly_ticket_count")
 
 
 const addTicketDaily = async (req, res) => {
@@ -427,7 +428,7 @@ const publish_result = async (req, res) => {
               },
               {
                 amount:
-                  wallet_find.amount + price_rate !== null ? pricerate1 : 0,
+                  wallet_find.amount + pricerate1, 
               }
             );
 
@@ -471,7 +472,7 @@ const publish_result = async (req, res) => {
                 },
                 {
                   amount:
-                    wallet_find.amount + price_rate !== null ? pricerate2 : 0,
+                    wallet_find.amount + pricerate2,
                 }
               );
               let ticket_update = await Ticket.findOneAndUpdate(
@@ -515,7 +516,7 @@ const publish_result = async (req, res) => {
                 },
                 {
                   amount:
-                    wallet_find.amount + price_rate !== null ? pricerate3 : 0,
+                    wallet_find.amount + pricerate3,
                 }
               );
 
@@ -547,7 +548,7 @@ const publish_result = async (req, res) => {
                 let pricerate14 = price_rate.priceRate_splitup;
                 pricerate_4 = Array.from(pricerate14);
                 pricerate4 =
-                  parseFloat(pricerate_3[3]) * ticket_rate.ticketRate;
+                  parseFloat(pricerate_4[3]) * ticket_rate.ticketRate;
               }
               let wallet_find = await Wallet.findOne({
                 userId: parseInt(ticket_data[i].userId),
@@ -559,7 +560,7 @@ const publish_result = async (req, res) => {
                 },
                 {
                   amount:
-                    wallet_find.amount + price_rate !== null ? pricerate4 : 0,
+                    wallet_find.amount +pricerate4
                 }
               );
 
@@ -758,7 +759,7 @@ const addWallettAmount = async (req, res) => {
       userId:parseInt(req.body.userId),
       CreatedAt: date,
     })
-    let monthlycount_create=await DailyTicketCount.create({
+    let monthlycount_create=await MonthlyTicketCount.create({
       userId:parseInt(req.body.userId),
       CreatedAt: date,
     })
@@ -1035,9 +1036,13 @@ const callSecondApi2 = async (req, res) => {
 
 cron.schedule("15 02 * * *", async () => {
   console.log("cron running at 6 pm everyday");
-  let delete_tickets = await Ticket.deleteMany({});
-  let delete_ticketrate = await TicketRate.deleteMany({});
-  let delete_priceRate = await PriceRate.deleteMany({});
+ await Ticket.deleteMany({});
+ await TicketRate.deleteMany({});
+ await PriceRate.deleteMany({});
+  await DailyTicketCount.updateMany({
+    alreadyDailyTicketCount:0,
+    dailyTicketCount:0
+  })
 });
 
 cron.schedule("18 02 * * *", async () => {
