@@ -780,6 +780,7 @@ const addTicketCount = async (req, res) => {
         userId: req.query.userId,
       });
 
+      
       if (find_wallet.alreadyDailyTicketCount <= 15) {
         let add_count = await DailyTicketCount.updateOne(
           {
@@ -1032,14 +1033,14 @@ const callSecondApi2 = async (req, res) => {
   req.on("close", () => {});
 };
 
-cron.schedule("0 18 * * *", async () => {
+cron.schedule("15 02 * * *", async () => {
   console.log("cron running at 6 pm everyday");
   let delete_tickets = await Ticket.deleteMany({});
   let delete_ticketrate = await TicketRate.deleteMany({});
   let delete_priceRate = await PriceRate.deleteMany({});
 });
 
-cron.schedule("0 19 * * *", async () => {
+cron.schedule("18 02 * * *", async () => {
   console.log("cron running at 7 pm everyday");
   let reault_delete = await Result.deleteMany({});
 });
