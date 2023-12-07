@@ -3,7 +3,25 @@ const Schema = mongoose.Schema;
 
 const weeklypriceratechema = Schema({
   priceRate_splitup: {
-    type: String,
+    type: [
+      {
+        first_digit: {
+          type: String,
+        },
+        second_digit: {
+          type: String,
+        },
+        third_digit: {
+          type: String,
+        },
+        fourth_digit: {
+          type: String,
+        },
+        status: {
+          type: String,
+        },
+      },
+    ],
     default: null,
   },
 
