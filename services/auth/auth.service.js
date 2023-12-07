@@ -22,7 +22,8 @@ const addUser = async (req, res) => {
     console.log(is_valid_referral_id, req.body.referralId);
 
     if (
-      user_find == undefined && (req.body.referralId === null || is_valid_referral_id !== null)
+      user_find == undefined &&
+      (req.body.referralId === null || is_valid_referral_id !== null)
     ) {
       const user = await User.create({
         username: req.body.username,
@@ -253,9 +254,8 @@ const SearchUser = async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
- 
     user: "mumbaimahaspinmaster@gmail.com",
- 
+
     pass: "qnxy whqb isat bzqf",
   },
 });
@@ -283,8 +283,8 @@ const sendPasswordMail = async (req, res) => {
 
 const Sendmail = async (req, res) => {
   const mailOptions = {
-    from: req.body.email,
-    to: "mumbaimahaspinmaster@gmail.com",
+    from: "mumbaimahaspinmaster@gmail.com",
+    to: req.body.email,
     subject: "Request Email",
     text: req.body.fullname + req.body.message,
   };

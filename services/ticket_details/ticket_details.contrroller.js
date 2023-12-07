@@ -55,12 +55,12 @@ router.get("/getWalletHistory", tickets.getWalletHistory);
 router.get("/get-daily-ticket-count", tickets.getBuyedTicketCount);
 router.post("/addWallet", tickets.addWallettAmount);
 router.get("/get-daily-winner", tickets.getWinner);
-router.put("/add-daily-price-rate", tickets.updatePriceRate);
+router.post("/add-daily-price-rate", tickets.updatePriceRate);
 router.get("/get-daily-price-rate", tickets.getPriceRate);
 router.get("/get-daily-result", tickets.getResult);
 router.get("/get-all-daily-history", tickets.getHistorry);
-router.get("/getDailyTicketCount",tickets.getDailyTicketCount);
-router.get("/getWalletAmount",tickets.getWalletAmount);
+router.get("/getDailyTicketCount", tickets.getDailyTicketCount);
+router.get("/getWalletAmount", tickets.getWalletAmount);
 
 // sse
 router.get("/sse", tickets.callSecondApi);

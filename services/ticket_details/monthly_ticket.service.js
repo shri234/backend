@@ -1,4 +1,3 @@
-
 const History = require("../../model/play_history");
 const User = require("../../model/User");
 const TicketRate = require("../../model/MonthlyTicketRate");
@@ -8,9 +7,9 @@ const PriceRate = require("../../model/MonthlyPriceRate");
 const Monthly_Tickets = require("../../model/monthly_tickets");
 const monthlyticketrate = require("../../model/MonthlyTicketRate");
 const Counter = require("../../model/Counter");
-const MonthlyHistory=require("../../model/monthly_master_history");
-const MonthlyTicketCount=require("../../model/monthly_ticket_count");
-const cron=require("node-cron")
+const MonthlyHistory = require("../../model/monthly_master_history");
+const MonthlyTicketCount = require("../../model/monthly_ticket_count");
+const cron = require("node-cron");
 
 // create Monthly_Tickets
 const addTicketMonthly = async (req, res) => {
@@ -32,7 +31,6 @@ const addTicketMonthly = async (req, res) => {
         },
         {
           monthlyTicketCount: wallet_u.monthlyTicketCount - 1,
-      
         }
       );
       let date = new Date();
@@ -98,9 +96,9 @@ const addMonthlyTicketCount = async (req, res) => {
       }
     }
   } catch (err) {
+    console.error("Error", err);
     console.log("Only 15 tickets can be bought");
     return res.status(500).json({ response: "Only 15 tickets can be bought" });
-    console.error("Error", err);
   }
 };
 
@@ -430,25 +428,6 @@ const monthlyPublishTicketResult = async (req, res) => {
       if (j === 0) {
         if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
           firstdigit = req.body[j].digit;
-          if (price_rate != null) {
-            let pricerate11 = price_rate.priceRate_splitup;
-            pricerate_1 = Array.from(pricerate11);
-            pricerate1 =
-              parseInt(pricerate_1[0]) * parseInt(ticket_rate.ticketRate);
-          }
-
-          let wallet_find = await Wallet.findOne({
-            userId: parseInt(ticket_data[i].userId),
-          });
-
-          let addon_wallet = await Wallet.findOneAndUpdate(
-            {
-              userId: parseInt(ticket_data[i].userId),
-            },
-            {
-              amount: wallet_find.amount + pricerate1,
-            }
-          );
 
           let ticket_update = await Monthly_Tickets.findOneAndUpdate(
             {
@@ -472,25 +451,7 @@ const monthlyPublishTicketResult = async (req, res) => {
         if (firstdigit !== undefined) {
           if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
             seconddigit = req.body[j].digit;
-            if (price_rate != null) {
-              let pricerate12 = price_rate.priceRate_splitup;
-              pricerate_2 = Array.from(pricerate12);
-              pricerate2 = pricerate_2[1] * ticket_rate.ticketRate;
-            }
 
-            let wallet_find = await Wallet.findOne({
-              userId: parseInt(ticket_data[i].userId),
-            });
-            console.log(typeof wallet_find.amount);
-            let addon_wallet = await Wallet.findOneAndUpdate(
-              {
-                userId: parseInt(ticket_data[i].userId),
-              },
-              {
-                amount:
-                  wallet_find.amount + pricerate2,
-              }
-            );
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
               {
                 ticketId: ticket_data[i].ticketId,
@@ -499,7 +460,6 @@ const monthlyPublishTicketResult = async (req, res) => {
                 "ticket.1.status": "true",
               }
             );
-            console.log(ticket_update, "Inside 1");
           } else {
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
               {
@@ -515,24 +475,7 @@ const monthlyPublishTicketResult = async (req, res) => {
         if (seconddigit != undefined) {
           if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
             thirddigit = req.body[j].digit;
-            if (price_rate != null) {
-              let pricerate13 = price_rate.priceRate_splitup;
-              pricerate_3 = Array.from(pricerate13);
-              pricerate3 = pricerate_3[2] * ticket_rate.ticketRate;
-            }
-            let wallet_find = await Wallet.findOne({
-              userId: parseInt(ticket_data[i].userId),
-            });
 
-            let addon_wallet = await Wallet.findOneAndUpdate(
-              {
-                userId: parseInt(ticket_data[i].userId),
-              },
-              {
-                amount:
-                  wallet_find.amount +pricerate3,
-              }
-            );
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
               {
                 ticketId: ticket_data[i].ticketId,
@@ -541,7 +484,6 @@ const monthlyPublishTicketResult = async (req, res) => {
                 "ticket.2.status": "true",
               }
             );
-            console.log(ticket_update, "Inside 2");
           } else {
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
               {
@@ -556,25 +498,6 @@ const monthlyPublishTicketResult = async (req, res) => {
       } else if (j === 3) {
         if (thirddigit != undefined) {
           if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            if (price_rate != null) {
-              let pricerate14 = price_rate.priceRate_splitup;
-              pricerate_4 = Array.from(pricerate14);
-              pricerate4 = parseFloat(pricerate_4[3]) * ticket_rate.ticketRate;
-            }
-            let wallet_find = await Wallet.findOne({
-              userId: parseInt(ticket_data[i].userId),
-            });
-
-            let addon_wallet = await Wallet.findOneAndUpdate(
-              {
-                userId: parseInt(ticket_data[i].userId),
-              },
-              {
-                amount:
-                  wallet_find.amount + pricerate4,
-              }
-            );
-
             let ticket_update = await Monthly_Tickets.findOneAndUpdate(
               {
                 ticketId: ticket_data[i].ticketId,
@@ -773,14 +696,14 @@ const getMonthlyHistory = async (req, res) => {
 
 cron.schedule("0 0 0 28-31 * *", async () => {
   console.log("cron running at  every last day of the month ");
- await Monthly_Tickets.deleteMany({});
-await monthlyticketrate.deleteMany({});
-await PriceRate.deleteMany({});
+  await Monthly_Tickets.deleteMany({});
+  await monthlyticketrate.deleteMany({});
+  await PriceRate.deleteMany({});
 });
 
 cron.schedule("0 0 0 28-31 * *", async () => {
   console.log("cron running at every last day of the month");
- await Result.deleteMany({});
+  await Result.deleteMany({});
 });
 
 async function getNextSequenceValue(sequenceName) {
@@ -805,5 +728,5 @@ module.exports = {
   getMonthlyWinner,
   getMonthlyBuyedTicketCount,
   getMonthlyResult,
-  getMonthlyHistory
+  getMonthlyHistory,
 };
