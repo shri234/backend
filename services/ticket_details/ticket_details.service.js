@@ -1017,7 +1017,13 @@ const callSecondApi2 = async (req, res) => {
   req.on("close", () => {});
 };
 
-cron.schedule("15 02 * * *", async () => {
+cron.schedule("0 17 * * *", async () => {
+  console.log("cron running at 5 pm everyday");
+  await TicketRate.deleteMany({});
+  await PriceRate.deleteMany({});
+});
+
+cron.schedule("0 18 * * *", async () => {
   console.log("cron running at 6 pm everyday");
   await Ticket.deleteMany({});
   await TicketRate.deleteMany({});
@@ -1028,7 +1034,7 @@ cron.schedule("15 02 * * *", async () => {
   });
 });
 
-cron.schedule("18 02 * * *", async () => {
+cron.schedule("0 19 * * *", async () => {
   console.log("cron running at 7 pm everyday");
   let reault_delete = await Result.deleteMany({});
 });
