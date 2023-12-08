@@ -412,11 +412,13 @@ const monthlyPublishTicketResult = async (req, res) => {
   let ticket_rate = await TicketRate.findOne({});
 
   let result_add = await Result.create({
-    winning_ticket: {
-      result_ticket_1: req.body.ticket_1,
-      result_ticket_2: req.body.ticket_2,
-      result_ticket_3: req.body.ticket_3,
-    },
+    winning_ticket: [
+      {
+        result_ticket_1: req.body.ticket_1,
+        result_ticket_2: req.body.ticket_2,
+        result_ticket_3: req.body.ticket_3,
+      },
+    ],
 
     CreatedAt: date1,
   });

@@ -13,14 +13,11 @@ const monthlyresultschema = Schema({
           type: String,
           default: null,
         },
-      },
-      {
+
         result_ticket_2: {
           type: String,
           default: null,
         },
-      },
-      {
         result_ticket_3: {
           type: String,
           default: null,
