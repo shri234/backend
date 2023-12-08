@@ -453,7 +453,7 @@ const publish_result = async (req, res) => {
             ) {
               seconddigit = req.body[j].digit;
               if (price_rate != null) {
-                pricerate_2 = price_rate.priceRate_splitup[0].seoncd_digit;
+                pricerate_2 = price_rate.priceRate_splitup[0].second_digit;
                 pricerate2 = pricerate_2 * ticket_rate.ticketRate;
               }
 
