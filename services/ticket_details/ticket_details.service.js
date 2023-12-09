@@ -1026,8 +1026,6 @@ cron.schedule("0 17 * * *", async () => {
 cron.schedule("0 18 * * *", async () => {
   console.log("cron running at 6 pm everyday");
   await Ticket.deleteMany({});
-  await TicketRate.deleteMany({});
-  await PriceRate.deleteMany({});
   await DailyTicketCount.updateMany({
     alreadyDailyTicketCount: 0,
     dailyTicketCount: 0,
