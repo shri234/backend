@@ -14,6 +14,9 @@ const addUser = async (req, res) => {
     let user_find = await User.findOne({
       username: req.body.username,
     });
+    if(req.body.referralId==""){
+      req.body.referralId=null
+    }
 
     const is_valid_referral_id = await User.findOne({
       referralId: req.body.referralId,
