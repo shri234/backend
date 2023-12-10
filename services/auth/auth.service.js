@@ -14,8 +14,8 @@ const addUser = async (req, res) => {
     let user_find = await User.findOne({
       username: req.body.username,
     });
-    if(req.body.referralId==""){
-      req.body.referralId=null
+    if (req.body.referralId == "") {
+      req.body.referralId = null;
     }
 
     const is_valid_referral_id = await User.findOne({
@@ -138,6 +138,7 @@ const getAllUser = async (req, res) => {
     let skip_page = pageno * 10;
     let user_all = [];
     const user = await User.find({ role: "user" }).skip(skip_page).limit(10);
+
     for (let i = 0; i < user.length; i++) {
       let all_user = {
         username: user[i].username + " " + `(${user[i].referralId})`,
@@ -150,8 +151,9 @@ const getAllUser = async (req, res) => {
         userId: user[i].userId,
         upi_id: user[i].upi_id,
       };
-      user_all.push(all_user);
+      user_all.unshift(all_user);
     }
+
     let get_count = await User.find({ role: "user" }).countDocuments();
     return res.status(200).json({ data: user_all, count: get_count });
   } catch (err) {
