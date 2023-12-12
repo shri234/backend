@@ -441,6 +441,12 @@ const publish_result = async (req, res) => {
             },{
                 "ticket.0.status": "true",
             });
+
+            let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.0.status":"true"
+            });
           } else {
             let ticket_update = await Ticket.findOneAndUpdate(
               {
@@ -454,6 +460,11 @@ const publish_result = async (req, res) => {
              userId: parseInt(ticket_data[i].userId),
             },{
                 "ticket.0.status": "false",
+            });
+            let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.0.status":"false"
             });
           }
         } else if (j === 1) {
@@ -491,6 +502,11 @@ const publish_result = async (req, res) => {
             },{
                 "ticket.1.status": "true",
             });
+              let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.1.status":"true"
+            });
             } else {
               let ticket_update = await Ticket.findOneAndUpdate(
                 {
@@ -504,6 +520,11 @@ const publish_result = async (req, res) => {
              userId: parseInt(ticket_data[i].userId),
             },{
                 "ticket.1.status": "false",
+            });
+              let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.1.status":"false"
             });
             }
           }
@@ -543,6 +564,11 @@ const publish_result = async (req, res) => {
             },{
                 "ticket.2.status": "true",
             });
+              let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.2.status":"true"
+            });
             } else {
               let ticket_update = await Ticket.findOneAndUpdate(
                 {
@@ -556,6 +582,11 @@ const publish_result = async (req, res) => {
              userId: parseInt(ticket_data[i].userId),
             },{
                 "ticket.2.status": "false",
+            });
+              let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.2.status":"false"
             });
             }
           }
@@ -594,6 +625,11 @@ const publish_result = async (req, res) => {
             },{
                 "ticket.3.status": "true",
             });
+              let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.3.status":"true"
+            });
             } else {
               let ticket_update = await Ticket.findOneAndUpdate(
                 {
@@ -607,6 +643,11 @@ const publish_result = async (req, res) => {
              userId: parseInt(ticket_data[i].userId),
             },{
                 "ticket.3.status": "false",
+            });
+              let play_ticket_update = await History.updateMany({
+              userId:parseInt(ticket_data[i].userId)
+            },{
+              "ticket.3.status":"false"
             });
             }
           }
