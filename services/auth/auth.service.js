@@ -139,6 +139,7 @@ try {
 
   // Retrieve user data with pagination
   const users = await User.find({ role: "user" })
+    .sort({CreatedAt:-1})
     .skip(skip_page)
     .limit(10);
 
