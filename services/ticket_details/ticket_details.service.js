@@ -963,33 +963,49 @@ const getResult = async (req, res) => {
 };
 
 const getHistorry = async (req, res) => {
-  try {
-    let get_all = [];
-    let pageno = req.query.pageno;
-    let skip_page = pageno * 10;
-    let get_Histories = await DailyHistory.find({}).skip(skip_page).limit(10);
-    for (let i = 0; i < get_Histories.length; i++) {
-      let find_user = await User.findOne({
-        username: get_Histories[i].username,
-      });
-      let all_date = {
-        CreatedAt: moment(get_Histories[i].CreatedAt).format("DD/MM/YYYY"),
-        ticket: get_Histories[i].ticket,
-        id: get_Histories[i].id,
-        ticketCount: get_Histories[i].ticketCount,
-        username: get_Histories[i].username + `(${find_user.referralId})`,
-      };
-      get_all.push(all_date);
-    }
-    let data_count = await DailyHistory.find().countDocuments();
-    res.status(200).json({
-      response: "Got data successfully",
-      data: get_all,
-      count: data_count,
-    });
-  } catch (error) {
-    console.error(error);
-  }
+ const get_all = [];
+const pageno = req.query.pageno;
+const skip_page = pageno * 10;
+
+try {
+  // Retrieve histories with pagination
+  const get_Histories = await DailyHistory.find({})
+    .skip(skip_page)
+    .limit(10);
+
+  // Extract usernames from histories
+  const usernames = get_Histories.map(history => history.username);
+
+  // Perform a single lookup for all users
+  const users = await User.find({ username: { $in: usernames } });
+
+  // Create a map for quick username to user mapping
+  const userMap = new Map(users.map(user => [user.username, user]));
+
+  // Transform data
+  const formattedData = get_Histories.map(history => ({
+    CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
+    ticket: history.ticket,
+    id: history.id,
+    ticketCount: history.ticketCount,
+    username: history.username + `(${userMap.get(history.username).referralId})`,
+  }));
+
+  // Get total count of documents
+  const data_count = await DailyHistory.countDocuments();
+
+  // Send the optimized response
+  res.status(200).json({
+    response: "Got data successfully",
+    data: formattedData,
+    count: data_count,
+  });
+} catch (error) {
+  // Handle errors appropriately
+  console.error("Error:", error);
+  res.status(500).json({ error: "Internal Server Error" });
+}
+
 };
 
 const callSecondApi = async (req, res) => {
