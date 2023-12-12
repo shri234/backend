@@ -607,11 +607,12 @@ const getHistories = async (req, res) => {
     .limit(10);
 
   // Transform data
-  let get_all = get_Histories.map(history => ({
+  let get_all = get_Histories.map((history,index) => ({
     CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
     ticket: history.ticket,
     id: history.id,
     ticketCount: history.ticketCount,
+    number: index + 1,
   }));
 
   // Get total count of documents
