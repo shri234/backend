@@ -667,7 +667,7 @@ const publish_result = async (req, res) => {
       thirddigit = undefined;
       fourthdigit = undefined;
     }
-
+await TicketRate.deleteMany({});
     return res
       .status(200)
       .json({ response: "Published result successfully", Winners: t });
@@ -1132,7 +1132,7 @@ const callSecondApi2 = async (req, res) => {
 
 cron.schedule("0 17 * * *", async () => {
   console.log("cron running at 5 pm everyday");
-  await TicketRate.deleteMany({});
+  
   await PriceRate.deleteMany({});
    await DailyTicketCount.updateMany({
     alreadyDailyTicketCount: 0,
