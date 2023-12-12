@@ -819,38 +819,41 @@ const getTicketRate = async (req, res) => {
 };
 
 const getWalletHistory = async (req, res) => {
-  let pageno = req.query.pageno;
-  let skip_page = pageno * 10;
-  let arr = [];
-  let a = 0;
-  let all_data = {};
-  try {
-    let get_wallet = await WalletHistory.find({
-      userId: parseInt(req.query.userId),
-    })
-      .skip(skip_page)
-      .limit(10);
-    for (let i = 0; i < get_wallet.length; i++) {
-      a += 1;
-      all_data = {
-        number: a,
-        CreatedAt: moment(get_wallet[i].CreatedAt).format("YYYY-MM-DD"),
-        amount: get_wallet[i].amount,
-        status: get_wallet[i].status,
-      };
-      arr.push(all_data);
-    }
-    let get_count = await WalletHistory.find({
-      userId: req.query.userId,
-    }).countDocuments();
-    return res.status(200).json({
-      response: "Got data successfully",
-      data: arr,
-      count: get_count,
-    });
-  } catch (err) {
-    console.error("Error in getting wallet history Please check function", err);
-  }
+try {
+  const pageno = req.query.pageno;
+  const skip_page = pageno * 10;
+
+  // Retrieve wallet history with pagination
+  const get_wallet = await WalletHistory.find({
+    userId: parseInt(req.query.userId),
+  })
+    .skip(skip_page)
+    .limit(10);
+
+  // Transform data using map
+  const data = get_wallet.map((wallet, index) => ({
+    number: index + 1,
+    CreatedAt: moment(wallet.CreatedAt).format("YYYY-MM-DD"),
+    amount: wallet.amount,
+    status: wallet.status,
+  }));
+
+  // Get total count of wallet history documents
+  const get_count = await WalletHistory.countDocuments({
+    userId: req.query.userId,
+  });
+
+  // Send the optimized response
+  return res.status(200).json({
+    response: "Got data successfully",
+    data: data,
+    count: get_count,
+  });
+} catch (err) {
+  console.error("Error in getting wallet history. Please check function", err);
+  return res.status(500).json({ error: "Internal Server Error" });
+}
+
 };
 
 const getBuyedTicketCount = async (req, res) => {
