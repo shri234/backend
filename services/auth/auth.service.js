@@ -133,32 +133,38 @@ const getUser = async (req, res) => {
 };
 
 const getAllUser = async (req, res) => {
-  try {
-    let pageno = parseInt(req.query.pageno);
-    let skip_page = pageno * 10;
-    let user_all = [];
-    const user = await User.find({ role: "user" }).skip(skip_page).limit(10);
+try {
+  const pageno = parseInt(req.query.pageno);
+  const skip_page = pageno * 10;
 
-    for (let i = 0; i < user.length; i++) {
-      let all_user = {
-        username: user[i].username + " " + `(${user[i].referralId})`,
-        email: user[i].email,
-        panNo: user[i].panNo,
-        aadharNo: user[i].aadharNo,
-        address: user[i].address,
-        accountNo: user[i].accountNo,
-        mobileNumber: user[i].mobileNumber,
-        userId: user[i].userId,
-        upi_id: user[i].upi_id,
-      };
-      user_all.unshift(all_user);
-    }
+  // Retrieve user data with pagination
+  const users = await User.find({ role: "user" })
+    .skip(skip_page)
+    .limit(10);
 
-    let get_count = await User.find({ role: "user" }).countDocuments();
-    return res.status(200).json({ data: user_all, count: get_count });
-  } catch (err) {
-    console.error("Error", err);
-  }
+  // Transform data using map
+  const user_all = users.map(user => ({
+    username: `${user.username} (${user.referralId})`,
+    email: user.email,
+    panNo: user.panNo,
+    aadharNo: user.aadharNo,
+    address: user.address,
+    accountNo: user.accountNo,
+    mobileNumber: user.mobileNumber,
+    userId: user.userId,
+    upi_id: user.upi_id,
+  }));
+
+  // Get total count of user documents
+  const get_count = await User.countDocuments({ role: "user" });
+
+  // Send the optimized response
+  return res.status(200).json({ data: user_all, count: get_count });
+} catch (err) {
+  console.error("Error", err);
+  return res.status(500).json({ error: "Internal Server Error" });
+}
+
 };
 
 const addAgent = async (req, res) => {
