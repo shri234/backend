@@ -766,15 +766,19 @@ const getWeeklyHistory = async (req, res) => {
   }
 };
 
-cron.schedule("0 19 * * FRI", async () => {
+cron.schedule("0 18 * * FRI", async () => {
   console.log("cron running at 7 pm everyday");
-  await Weekly_Tickets.deleteMany({});
   await weeklyticketrate.deleteMany({});
   await PriceRate.deleteMany({});
   await WeeklyTicketCount.updateMany({
     alreadyWeeklyTicketCount: 0,
     weeklyTicketCount: 0,
   });
+});
+
+cron.schedule("0 19 * * FRI", async () => {
+  console.log("cron running at 7 pm everyday");
+  await Weekly_Tickets.deleteMany({});
   await WeeklyHistory.deleteMany({});
 });
 
