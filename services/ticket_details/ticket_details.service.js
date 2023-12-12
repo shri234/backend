@@ -827,6 +827,7 @@ try {
   const get_wallet = await WalletHistory.find({
     userId: parseInt(req.query.userId),
   })
+    .sort({ CreatedAt: -1 }) 
     .skip(skip_page)
     .limit(10);
 
