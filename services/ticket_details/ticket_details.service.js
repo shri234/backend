@@ -596,34 +596,39 @@ const publish_result = async (req, res) => {
 };
 
 const getHistories = async (req, res) => {
-  try {
-    let pageno = req.query.pageno;
-    let skip_page = pageno * 10;
-    let get_all = [];
-    let get_Histories = await History.find({ username: req.query.username })
-      .skip(skip_page)
-      .limit(10);
-    for (let i = 0; i < get_Histories.length; i++) {
-      let all_date = {
-        CreatedAt: moment(get_Histories[i].CreatedAt).format("DD/MM/YYYY"),
-        ticket: get_Histories[i].ticket,
-        id: get_Histories[i].id,
-        ticketCount: get_Histories[i].ticketCount,
-      };
-      get_all.push(all_date);
-    }
-    let get_count = await History.find({
-      username: req.query.username,
-    }).countDocuments();
-    console.log(get_all);
-    return res.status(200).json({
-      response: "Got data successfully",
-      data: get_all,
-      count: get_count,
-    });
-  } catch (err) {
-    console.error("Error", err);
-  }
+ try {
+  let pageno = req.query.pageno;
+  let skip_page = pageno * 10;
+
+  // Retrieve histories with pagination and sort by 'CreatedAt' in descending order
+  let get_Histories = await History.find({ username: req.query.username })
+    .sort({ CreatedAt: -1 }) // Sort by 'CreatedAt' in descending order
+    .skip(skip_page)
+    .limit(10);
+
+  // Transform data
+  let get_all = get_Histories.map(history => ({
+    CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
+    ticket: history.ticket,
+    id: history.id,
+    ticketCount: history.ticketCount,
+  }));
+
+  // Get total count of documents
+  let get_count = await History.countDocuments({ username: req.query.username });
+
+  console.log(get_all);
+
+  // Send the optimized response
+  return res.status(200).json({
+    response: "Got data successfully",
+    data: get_all,
+    count: get_count,
+  });
+} catch (err) {
+  console.error("Error", err);
+  return res.status(500).json({ error: "Internal Server Error" });
+}
 };
 
 const addTicketRate = async (req, res) => {
