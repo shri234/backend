@@ -775,6 +775,7 @@ cron.schedule("0 19 * * FRI", async () => {
     alreadyWeeklyTicketCount: 0,
     weeklyTicketCount: 0,
   });
+  await WeeklyHistory.deleteMany({});
 });
 
 cron.schedule("0 20 * * FRI", async () => {
