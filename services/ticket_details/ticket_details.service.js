@@ -971,8 +971,9 @@ const pageno = req.query.pageno;
 const skip_page = pageno * 10;
 
 try {
-  // Retrieve histories with pagination
+  // Retrieve histories with pagination and sort by 'CreatedAt' in descending order
   const get_Histories = await DailyHistory.find({})
+    .sort({ CreatedAt: -1 }) // Sort by 'CreatedAt' in descending order
     .skip(skip_page)
     .limit(10);
 
@@ -986,13 +987,18 @@ try {
   const userMap = new Map(users.map(user => [user.username, user]));
 
   // Transform data
-  const formattedData = get_Histories.map(history => ({
-    CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
-    ticket: history.ticket,
-    id: history.id,
-    ticketCount: history.ticketCount,
-    username: history.username + `(${userMap.get(history.username).referralId})`,
-  }));
+  const formattedData = get_Histories.map(history => {
+    const user = userMap.get(history.username);
+    return {
+      CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
+      ticket: history.ticket,
+      id: history.id,
+      ticketCount: history.ticketCount,
+      username: user
+        ? `${history.username} (${user.referralId})`
+        : history.username + " (User Not Found)",
+    };
+  });
 
   // Get total count of documents
   const data_count = await DailyHistory.countDocuments();
