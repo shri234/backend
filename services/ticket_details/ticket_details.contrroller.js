@@ -19,6 +19,10 @@ router.get("/get-weekly-winner", weekly_ticket.getWeeklyWinner);
 router.get("/get-weekly-result", weekly_ticket.getWeeklyResult);
 router.get("/get-weekly-ticket-count", weekly_ticket.getWeeklyBuyedTicketCount);
 router.get("/get-all-weekly-history", weekly_ticket.getWeeklyHistory);
+router.get(
+  "/get-weekly-price-amount",
+  weekly_ticket.addWeeklyPriceAmountToWallet
+);
 
 // monthly api's
 router.post("/add-monthly-ticket", monthly_ticket.addTicketMonthly);
@@ -61,9 +65,6 @@ router.get("/get-daily-result", tickets.getResult);
 router.get("/get-all-daily-history", tickets.getHistorry);
 router.get("/getDailyTicketCount", tickets.getDailyTicketCount);
 router.get("/getWalletAmount", tickets.getWalletAmount);
+router.get("/get-daily-price-amount", tickets.addPriceAmountToWallet);
 
-// sse
-router.get("/sse", tickets.callSecondApi);
-router.get("/sse1", tickets.callSecondApi1);
-router.get("/sse2", tickets.callSecondApi2);
 module.exports = router;
