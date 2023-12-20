@@ -711,7 +711,11 @@ const weeklyPublishTicketResult = async (req, res) => {
   start_date.setDate(start_date.getDate() - 1);
   start_date.setHours(17, 0, 0, 0);
   date.setHours(17, 0, 0, 0);
-
+  let ticket_rate = await TicketRate.findOne({});
+  await previousTicketRate.updateMany({
+    previous_weekly_ticket_rate: ticket_rate.ticketRate,
+    previous_weekly_ticket_rate_called: null,
+  });
   let result_add = await WeeklyResult.create({
     result_ticket:
       req.body[0].digit +
