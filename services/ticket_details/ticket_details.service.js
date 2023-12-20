@@ -11,12 +11,13 @@ const Wallet = require("../../model/wallet");
 const Result = require("../../model/result");
 const PriceRate = require("../../model/price_rate");
 const cron = require("node-cron");
-const monthlyresult = require("../../model/MonthlyResult");
-const weeklyresult = require("../../model/WeeklyResult");
+
 const DailyTicketCount = require("../../model/daily_ticket_count");
 const DailyHistory = require("../../model/daily_master_history");
 const WeeklyTicketCount = require("../../model/weekly_ticket_count");
 const MonthlyTicketCount = require("../../model/monthly_ticket_count");
+
+const previousTicketRate = require("../../model/previous_ticket_rate");
 
 const addTicketDaily = async (req, res) => {
   try {
@@ -337,11 +338,6 @@ const getMinimum = async (req, res) => {
 
 const getTickets = async (req, res) => {
   try {
-    let pageno = req.query.pageno;
-    let skip_page = pageno * 10;
-    let start_date = new Date(req.query.date);
-    let date = new Date(req.query.date);
-
     let get_tickets = await Ticket.find({
       userId: req.query.userId,
     });
@@ -360,11 +356,10 @@ const getTickets = async (req, res) => {
   }
 };
 
-const publish_result = async (req, res) => {
+const addDailyPriceAmountToWallet = async (req, res) => {
   try {
-    let body_data = req.body;
-    let userid;
     let firstdigit;
+    let userid;
     let seconddigit;
     let thirddigit;
     let fourthdigit;
@@ -377,6 +372,346 @@ const publish_result = async (req, res) => {
     let pricerate4;
     let pricerate3;
     let t = 0;
+
+    let ticket_data = await Ticket.find({});
+
+    let price_rate = await PriceRate.findOne({});
+
+    const tmp_ticket = await previousTicketRate.findOne({});
+    const result = await Result.findOne({});
+
+    const tmp_result = Array.from(result.result_ticket).map(Number);
+    if (tmp_ticket.previous_daily_ticket_rate_called === null) {
+      for (let i = 0; i < ticket_data.length; i++) {
+        userid = ticket_data[i].userId;
+        for (let j = 0; j < 4; j++) {
+          if (j === 0) {
+            if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
+              firstdigit = tmp_result[j];
+              if (price_rate != null) {
+                pricerate_1 = price_rate.priceRate_splitup[0].first_digit;
+                pricerate1 =
+                  pricerate_1 * tmp_ticket.previous_daily_ticket_rate;
+              }
+
+              let wallet_find = await Wallet.findOne({
+                userId: parseInt(ticket_data[i].userId),
+              });
+
+              await Wallet.findOneAndUpdate(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  amount: wallet_find.amount + pricerate1,
+                }
+              );
+
+              await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.0.status": "true",
+                }
+              );
+              await DailyHistory.updateMany(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  "ticket.0.status": "true",
+                }
+              );
+
+              await History.updateMany(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  "ticket.0.status": "true",
+                }
+              );
+            } else {
+              await Ticket.findOneAndUpdate(
+                {
+                  ticketId: ticket_data[i].ticketId,
+                },
+                {
+                  "ticket.0.status": "false",
+                }
+              );
+              await DailyHistory.updateMany(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  "ticket.0.status": "false",
+                }
+              );
+              await History.updateMany(
+                {
+                  userId: parseInt(ticket_data[i].userId),
+                },
+                {
+                  "ticket.0.status": "false",
+                }
+              );
+            }
+          } else if (j === 1) {
+            if (firstdigit !== undefined) {
+              if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
+                seconddigit = tmp_result[j];
+                if (price_rate != null) {
+                  pricerate_2 = price_rate.priceRate_splitup[0].second_digit;
+                  pricerate2 =
+                    pricerate_2 * tmp_ticket.previous_daily_ticket_rate;
+                }
+
+                let wallet_find = await Wallet.findOne({
+                  userId: parseInt(ticket_data[i].userId),
+                });
+                await Wallet.findOneAndUpdate(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    amount: wallet_find.amount + pricerate2,
+                  }
+                );
+                await Ticket.findOneAndUpdate(
+                  {
+                    ticketId: ticket_data[i].ticketId,
+                  },
+                  {
+                    "ticket.1.status": "true",
+                  }
+                );
+                await DailyHistory.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.1.status": "true",
+                  }
+                );
+                await History.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.1.status": "true",
+                  }
+                );
+              } else {
+                await Ticket.findOneAndUpdate(
+                  {
+                    ticketId: ticket_data[i].ticketId,
+                  },
+                  {
+                    "ticket.1.status": "false",
+                  }
+                );
+                await DailyHistory.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.1.status": "false",
+                  }
+                );
+                await History.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.1.status": "false",
+                  }
+                );
+              }
+            }
+          } else if (j === 2) {
+            if (seconddigit != undefined) {
+              if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
+                thirddigit = tmp_result[j];
+                if (price_rate != null) {
+                  pricerate_3 = price_rate.priceRate_splitup[0].third_digit;
+                  pricerate3 =
+                    pricerate_3 * tmp_ticket.previous_daily_ticket_rate;
+                }
+                let wallet_find = await Wallet.findOne({
+                  userId: parseInt(ticket_data[i].userId),
+                });
+
+                await Wallet.findOneAndUpdate(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    amount: wallet_find.amount + pricerate3,
+                  }
+                );
+
+                await Ticket.findOneAndUpdate(
+                  {
+                    ticketId: ticket_data[i].ticketId,
+                  },
+                  {
+                    "ticket.2.status": "true",
+                  }
+                );
+                await DailyHistory.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.2.status": "true",
+                  }
+                );
+                await History.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.2.status": "true",
+                  }
+                );
+              } else {
+                await Ticket.findOneAndUpdate(
+                  {
+                    ticketId: ticket_data[i].ticketId,
+                  },
+                  {
+                    "ticket.2.status": "false",
+                  }
+                );
+                await DailyHistory.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.2.status": "false",
+                  }
+                );
+                await History.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.2.status": "false",
+                  }
+                );
+              }
+            }
+          } else if (j === 3) {
+            if (thirddigit != undefined) {
+              if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
+                if (price_rate != null) {
+                  pricerate_4 = price_rate.priceRate_splitup[0].fourth_digit;
+                  pricerate4 =
+                    pricerate_4 * tmp_ticket.previous_daily_ticket_rate;
+                }
+                let wallet_find = await Wallet.findOne({
+                  userId: parseInt(ticket_data[i].userId),
+                });
+
+                await Wallet.findOneAndUpdate(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    amount: wallet_find.amount + pricerate4,
+                  }
+                );
+
+                await Ticket.findOneAndUpdate(
+                  {
+                    ticketId: ticket_data[i].ticketId,
+                  },
+                  {
+                    "ticket.3.status": "true",
+                  }
+                );
+                await DailyHistory.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.3.status": "true",
+                  }
+                );
+                await History.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.3.status": "true",
+                  }
+                );
+              } else {
+                await Ticket.findOneAndUpdate(
+                  {
+                    ticketId: ticket_data[i].ticketId,
+                  },
+                  {
+                    "ticket.3.status": "false",
+                  }
+                );
+                await DailyHistory.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.3.status": "false",
+                  }
+                );
+                await History.updateMany(
+                  {
+                    userId: parseInt(ticket_data[i].userId),
+                  },
+                  {
+                    "ticket.3.status": "false",
+                  }
+                );
+              }
+            }
+          }
+        }
+        if (
+          firstdigit != undefined &&
+          seconddigit != undefined &&
+          thirddigit != undefined &&
+          fourthdigit != undefined
+        ) {
+          t += 1;
+        }
+
+        firstdigit = undefined;
+        seconddigit = undefined;
+        thirddigit = undefined;
+        fourthdigit = undefined;
+      }
+
+      const new_ticket_rate = await TicketRate.findOne({});
+
+      await previousTicketRate.updateMany({
+        previous_daily_ticket_rate: new_ticket_rate.ticketRate,
+        previous_daily_ticket_rate_called: 1,
+      });
+    }
+
+    let get_tickets = await Ticket.find({
+      userId: userid,
+    });
+    return res.status(200).json({ response: "success", data: get_tickets });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const publish_result = async (req, res) => {
+  try {
+    let t = 0;
     let date1 = new Date();
     let start_date1 = new Date(date1.setHours(date1.getHours() + 5));
     new Date(date1.setMinutes(date1.getMinutes() + 30));
@@ -386,14 +721,15 @@ const publish_result = async (req, res) => {
     start_date.setDate(start_date.getDate() - 1);
     start_date.setHours(17, 0, 0, 0);
     date.setHours(17, 0, 0, 0);
-    console.log(start_date, date);
-    let ticket_data = await Ticket.find({});
-    console.log(-1);
-    let price_rate = await PriceRate.findOne({});
-    console.log(0);
+
     let ticket_rate = await TicketRate.findOne({});
-    console.log(1);
-    let result_add = await Result.create({
+
+    await previousTicketRate.updateMany({
+      previous_daily_ticket_rate: ticket_rate.ticketRate,
+      previous_daily_ticket_rate_called: null,
+    });
+
+    await Result.create({
       result_ticket:
         req.body[0].digit +
         req.body[1].digit +
@@ -402,272 +738,7 @@ const publish_result = async (req, res) => {
       CreatedAt: date1,
     });
 
-    console.log(price_rate.priceRate_splitup, "pricerate");
-    for (let i = 0; i < ticket_data.length; i++) {
-      userid = ticket_data[i].userId;
-      for (let j = 0; j < 4; j++) {
-        if (j === 0) {
-          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            firstdigit = req.body[j].digit;
-            if (price_rate != null) {
-              let pricerate11 = price_rate.priceRate_splitup;
-              pricerate_1 = price_rate.priceRate_splitup[0].first_digit;
-              pricerate1 = pricerate_1 * ticket_rate.ticketRate;
-            }
-
-            let wallet_find = await Wallet.findOne({
-              userId: parseInt(ticket_data[i].userId),
-            });
-
-            let addon_wallet = await Wallet.findOneAndUpdate(
-              {
-                userId: parseInt(ticket_data[i].userId),
-              },
-              {
-                amount: wallet_find.amount + pricerate1,
-              }
-            );
-
-            let ticket_update = await Ticket.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.0.status": "true",
-              }
-            );
-            let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.0.status": "true",
-            });
-
-            let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.0.status":"true"
-            });
-          } else {
-            let ticket_update = await Ticket.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.0.status": "false",
-              }
-            );
-             let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.0.status": "false",
-            });
-            let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.0.status":"false"
-            });
-          }
-        } else if (j === 1) {
-          if (firstdigit !== undefined) {
-            if (
-              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
-            ) {
-              seconddigit = req.body[j].digit;
-              if (price_rate != null) {
-                pricerate_2 = price_rate.priceRate_splitup[0].second_digit;
-                pricerate2 = pricerate_2 * ticket_rate.ticketRate;
-              }
-
-              let wallet_find = await Wallet.findOne({
-                userId: parseInt(ticket_data[i].userId),
-              });
-              let addon_wallet = await Wallet.findOneAndUpdate(
-                {
-                  userId: parseInt(ticket_data[i].userId),
-                },
-                {
-                  amount: wallet_find.amount + pricerate2,
-                }
-              );
-              let ticket_update = await Ticket.findOneAndUpdate(
-                {
-                  ticketId: ticket_data[i].ticketId,
-                },
-                {
-                  "ticket.1.status": "true",
-                }
-              );
-               let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.1.status": "true",
-            });
-              let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.1.status":"true"
-            });
-            } else {
-              let ticket_update = await Ticket.findOneAndUpdate(
-                {
-                  ticketId: ticket_data[i].ticketId,
-                },
-                {
-                  "ticket.1.status": "false",
-                }
-              );
-               let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.1.status": "false",
-            });
-              let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.1.status":"false"
-            });
-            }
-          }
-        } else if (j === 2) {
-          if (seconddigit != undefined) {
-            if (
-              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
-            ) {
-              thirddigit = req.body[j].digit;
-              if (price_rate != null) {
-                pricerate_3 = price_rate.priceRate_splitup[0].third_digit;
-                pricerate3 = pricerate_3 * ticket_rate.ticketRate;
-              }
-              let wallet_find = await Wallet.findOne({
-                userId: parseInt(ticket_data[i].userId),
-              });
-
-              let addon_wallet = await Wallet.findOneAndUpdate(
-                {
-                  userId: parseInt(ticket_data[i].userId),
-                },
-                {
-                  amount: wallet_find.amount + pricerate3,
-                }
-              );
-
-              let ticket_update = await Ticket.findOneAndUpdate(
-                {
-                  ticketId: ticket_data[i].ticketId,
-                },
-                {
-                  "ticket.2.status": "true",
-                }
-              );
-               let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.2.status": "true",
-            });
-              let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.2.status":"true"
-            });
-            } else {
-              let ticket_update = await Ticket.findOneAndUpdate(
-                {
-                  ticketId: ticket_data[i].ticketId,
-                },
-                {
-                  "ticket.2.status": "false",
-                }
-              );
-               let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.2.status": "false",
-            });
-              let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.2.status":"false"
-            });
-            }
-          }
-        } else if (j === 3) {
-          if (thirddigit != undefined) {
-            if (
-              ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)
-            ) {
-              if (price_rate != null) {
-                pricerate_4 = price_rate.priceRate_splitup[0].fourth_digit;
-                pricerate4 = pricerate_4 * ticket_rate.ticketRate;
-              }
-              let wallet_find = await Wallet.findOne({
-                userId: parseInt(ticket_data[i].userId),
-              });
-
-              let addon_wallet = await Wallet.findOneAndUpdate(
-                {
-                  userId: parseInt(ticket_data[i].userId),
-                },
-                {
-                  amount: wallet_find.amount + pricerate4,
-                }
-              );
-
-              let ticket_update = await Ticket.findOneAndUpdate(
-                {
-                  ticketId: ticket_data[i].ticketId,
-                },
-                {
-                  "ticket.3.status": "true",
-                }
-              );
-               let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.3.status": "true",
-            });
-              let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.3.status":"true"
-            });
-            } else {
-              let ticket_update = await Ticket.findOneAndUpdate(
-                {
-                  ticketId: ticket_data[i].ticketId,
-                },
-                {
-                  "ticket.3.status": "false",
-                }
-              );
-               let playticket_update = await DailyHistory.updateMany({
-             userId: parseInt(ticket_data[i].userId),
-            },{
-                "ticket.3.status": "false",
-            });
-              let play_ticket_update = await History.updateMany({
-              userId:parseInt(ticket_data[i].userId)
-            },{
-              "ticket.3.status":"false"
-            });
-            }
-          }
-        }
-      }
-      if (
-        firstdigit != undefined &&
-        seconddigit != undefined &&
-        thirddigit != undefined &&
-        fourthdigit != undefined
-      ) {
-        t += 1;
-      }
-
-      firstdigit = undefined;
-      seconddigit = undefined;
-      thirddigit = undefined;
-      fourthdigit = undefined;
-    }
-await TicketRate.deleteMany({});
+    await TicketRate.deleteMany({});
     return res
       .status(200)
       .json({ response: "Published result successfully", Winners: t });
@@ -677,40 +748,42 @@ await TicketRate.deleteMany({});
 };
 
 const getHistories = async (req, res) => {
- try {
-  let pageno = req.query.pageno;
-  let skip_page = pageno * 10;
+  try {
+    let pageno = req.query.pageno;
+    let skip_page = pageno * 10;
 
-  // Retrieve histories with pagination and sort by 'CreatedAt' in descending order
-  let get_Histories = await History.find({ username: req.query.username })
-    .sort({ CreatedAt: -1 }) // Sort by 'CreatedAt' in descending order
-    .skip(skip_page)
-    .limit(10);
+    // Retrieve histories with pagination and sort by 'CreatedAt' in descending order
+    let get_Histories = await History.find({ username: req.query.username })
+      .sort({ CreatedAt: -1 }) // Sort by 'CreatedAt' in descending order
+      .skip(skip_page)
+      .limit(10);
 
-  // Transform data
-  let get_all = get_Histories.map((history,index) => ({
-    CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
-    ticket: history.ticket,
-    id: history.id,
-    ticketCount: history.ticketCount,
-    number: index + 1,
-  }));
+    // Transform data
+    let get_all = get_Histories.map((history, index) => ({
+      CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
+      ticket: history.ticket,
+      id: history.id,
+      ticketCount: history.ticketCount,
+      number: index + 1,
+    }));
 
-  // Get total count of documents
-  let get_count = await History.countDocuments({ username: req.query.username });
+    // Get total count of documents
+    let get_count = await History.countDocuments({
+      username: req.query.username,
+    });
 
-  console.log(get_all);
+    console.log(get_all);
 
-  // Send the optimized response
-  return res.status(200).json({
-    response: "Got data successfully",
-    data: get_all,
-    count: get_count,
-  });
-} catch (err) {
-  console.error("Error", err);
-  return res.status(500).json({ error: "Internal Server Error" });
-}
+    // Send the optimized response
+    return res.status(200).json({
+      response: "Got data successfully",
+      data: get_all,
+      count: get_count,
+    });
+  } catch (err) {
+    console.error("Error", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 const addTicketRate = async (req, res) => {
@@ -906,42 +979,44 @@ const getTicketRate = async (req, res) => {
 };
 
 const getWalletHistory = async (req, res) => {
-try {
-  const pageno = req.query.pageno;
-  const skip_page = pageno * 10;
+  try {
+    const pageno = req.query.pageno;
+    const skip_page = pageno * 10;
 
-  // Retrieve wallet history with pagination
-  const get_wallet = await WalletHistory.find({
-    userId: parseInt(req.query.userId),
-  })
-    .sort({ CreatedAt: -1 }) 
-    .skip(skip_page)
-    .limit(10);
+    // Retrieve wallet history with pagination
+    const get_wallet = await WalletHistory.find({
+      userId: parseInt(req.query.userId),
+    })
+      .sort({ CreatedAt: -1 })
+      .skip(skip_page)
+      .limit(10);
 
-  // Transform data using map
-  const data = get_wallet.map((wallet, index) => ({
-    number: index + 1,
-    CreatedAt: moment(wallet.CreatedAt).format("YYYY-MM-DD"),
-    amount: wallet.amount,
-    status: wallet.status,
-  }));
+    // Transform data using map
+    const data = get_wallet.map((wallet, index) => ({
+      number: index + 1,
+      CreatedAt: moment(wallet.CreatedAt).format("YYYY-MM-DD"),
+      amount: wallet.amount,
+      status: wallet.status,
+    }));
 
-  // Get total count of wallet history documents
-  const get_count = await WalletHistory.countDocuments({
-    userId: req.query.userId,
-  });
+    // Get total count of wallet history documents
+    const get_count = await WalletHistory.countDocuments({
+      userId: req.query.userId,
+    });
 
-  // Send the optimized response
-  return res.status(200).json({
-    response: "Got data successfully",
-    data: data,
-    count: get_count,
-  });
-} catch (err) {
-  console.error("Error in getting wallet history. Please check function", err);
-  return res.status(500).json({ error: "Internal Server Error" });
-}
-
+    // Send the optimized response
+    return res.status(200).json({
+      response: "Got data successfully",
+      data: data,
+      count: get_count,
+    });
+  } catch (err) {
+    console.error(
+      "Error in getting wallet history. Please check function",
+      err
+    );
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 const getBuyedTicketCount = async (req, res) => {
@@ -1054,55 +1129,54 @@ const getResult = async (req, res) => {
 };
 
 const getHistorry = async (req, res) => {
- const get_all = [];
-const pageno = req.query.pageno;
-const skip_page = pageno * 10;
+  const get_all = [];
+  const pageno = req.query.pageno;
+  const skip_page = pageno * 10;
 
-try {
-  // Retrieve histories with pagination and sort by 'CreatedAt' in descending order
-  const get_Histories = await DailyHistory.find({})
-    .sort({ CreatedAt: -1 }) // Sort by 'CreatedAt' in descending order
-    .skip(skip_page)
-    .limit(10);
+  try {
+    // Retrieve histories with pagination and sort by 'CreatedAt' in descending order
+    const get_Histories = await DailyHistory.find({})
+      .sort({ CreatedAt: -1 }) // Sort by 'CreatedAt' in descending order
+      .skip(skip_page)
+      .limit(10);
 
-  // Extract usernames from histories
-  const usernames = get_Histories.map(history => history.username);
+    // Extract usernames from histories
+    const usernames = get_Histories.map((history) => history.username);
 
-  // Perform a single lookup for all users
-  const users = await User.find({ username: { $in: usernames } });
+    // Perform a single lookup for all users
+    const users = await User.find({ username: { $in: usernames } });
 
-  // Create a map for quick username to user mapping
-  const userMap = new Map(users.map(user => [user.username, user]));
+    // Create a map for quick username to user mapping
+    const userMap = new Map(users.map((user) => [user.username, user]));
 
-  // Transform data
-  const formattedData = get_Histories.map(history => {
-    const user = userMap.get(history.username);
-    return {
-      CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
-      ticket: history.ticket,
-      id: history.id,
-      ticketCount: history.ticketCount,
-      username: user
-        ? `${history.username} (${user.referralId})`
-        : history.username + " (User Not Found)",
-    };
-  });
+    // Transform data
+    const formattedData = get_Histories.map((history) => {
+      const user = userMap.get(history.username);
+      return {
+        CreatedAt: moment(history.CreatedAt).format("DD/MM/YYYY"),
+        ticket: history.ticket,
+        id: history.id,
+        ticketCount: history.ticketCount,
+        username: user
+          ? `${history.username} (${user.referralId})`
+          : history.username + " (User Not Found)",
+      };
+    });
 
-  // Get total count of documents
-  const data_count = await DailyHistory.countDocuments();
+    // Get total count of documents
+    const data_count = await DailyHistory.countDocuments();
 
-  // Send the optimized response
-  res.status(200).json({
-    response: "Got data successfully",
-    data: formattedData,
-    count: data_count,
-  });
-} catch (error) {
-  // Handle errors appropriately
-  console.error("Error:", error);
-  res.status(500).json({ error: "Internal Server Error" });
-}
-
+    // Send the optimized response
+    res.status(200).json({
+      response: "Got data successfully",
+      data: formattedData,
+      count: data_count,
+    });
+  } catch (error) {
+    // Handle errors appropriately
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 const callSecondApi = async (req, res) => {
@@ -1132,9 +1206,9 @@ const callSecondApi2 = async (req, res) => {
 
 cron.schedule("0 17 * * *", async () => {
   console.log("cron running at 5 pm everyday");
-  
+
   await PriceRate.deleteMany({});
-   await DailyTicketCount.updateMany({
+  await DailyTicketCount.updateMany({
     alreadyDailyTicketCount: 0,
     dailyTicketCount: 0,
   });
@@ -1143,7 +1217,7 @@ cron.schedule("0 17 * * *", async () => {
 cron.schedule("0 18 * * *", async () => {
   console.log("cron running at 6 pm everyday");
   await Ticket.deleteMany({});
- await DailyHistory.deleteMany({});
+  await DailyHistory.deleteMany({});
 });
 
 cron.schedule("0 19 * * *", async () => {
@@ -1183,4 +1257,5 @@ module.exports = {
   callSecondApi2,
   getDailyTicketCount,
   getWalletAmount,
+  addPriceAmountToWallet: addDailyPriceAmountToWallet,
 };

@@ -1,12 +1,7 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const User = require("../../model/User");
 const Counter = require("../../model/Counter");
-const crypto = require("crypto");
+
 const nodemailer = require("nodemailer");
-const algorithm = "aes-256-cbc"; //Using AES encryption
-const key = crypto.randomBytes(32);
-const iv = crypto.randomBytes(16);
 
 const addUser = async (req, res) => {
   try {
@@ -21,8 +16,6 @@ const addUser = async (req, res) => {
     const is_valid_referral_id = await User.findOne({
       referralId: req.body.referralId,
     });
-
-    console.log(is_valid_referral_id, req.body.referralId);
 
     if (
       user_find == undefined &&
@@ -133,39 +126,38 @@ const getUser = async (req, res) => {
 };
 
 const getAllUser = async (req, res) => {
-try {
-  const pageno = parseInt(req.query.pageno);
-  const skip_page = pageno * 10;
+  try {
+    const pageno = parseInt(req.query.pageno);
+    const skip_page = pageno * 10;
 
-  // Retrieve user data with pagination
-  const users = await User.find({ role: "user" })
-    .sort({CreatedAt:-1})
-    .skip(skip_page)
-    .limit(10);
+    // Retrieve user data with pagination
+    const users = await User.find({ role: "user" })
+      .sort({ CreatedAt: -1 })
+      .skip(skip_page)
+      .limit(10);
 
-  // Transform data using map
-  const user_all = users.map(user => ({
-    username: `${user.username} (${user.referralId})`,
-    email: user.email,
-    panNo: user.panNo,
-    aadharNo: user.aadharNo,
-    address: user.address,
-    accountNo: user.accountNo,
-    mobileNumber: user.mobileNumber,
-    userId: user.userId,
-    upi_id: user.upi_id,
-  }));
+    // Transform data using map
+    const user_all = users.map((user) => ({
+      username: `${user.username} (${user.referralId})`,
+      email: user.email,
+      panNo: user.panNo,
+      aadharNo: user.aadharNo,
+      address: user.address,
+      accountNo: user.accountNo,
+      mobileNumber: user.mobileNumber,
+      userId: user.userId,
+      upi_id: user.upi_id,
+    }));
 
-  // Get total count of user documents
-  const get_count = await User.countDocuments({ role: "user" });
+    // Get total count of user documents
+    const get_count = await User.countDocuments({ role: "user" });
 
-  // Send the optimized response
-  return res.status(200).json({ data: user_all, count: get_count });
-} catch (err) {
-  console.error("Error", err);
-  return res.status(500).json({ error: "Internal Server Error" });
-}
-
+    // Send the optimized response
+    return res.status(200).json({ data: user_all, count: get_count });
+  } catch (err) {
+    console.error("Error", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 const addAgent = async (req, res) => {

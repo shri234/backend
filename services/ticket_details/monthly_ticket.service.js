@@ -380,20 +380,6 @@ const getMinimumMonthlyTicket = async (req, res) => {
 
 // Monthly publish
 const monthlyPublishTicketResult = async (req, res) => {
-  let body_data = req.body;
-  let userid;
-  let firstdigit;
-  let seconddigit;
-  let thirddigit;
-  let fourthdigit;
-  let pricerate_1;
-  let pricerate1;
-  let pricerate_2;
-  let pricerate2;
-  let pricerate_3;
-  let pricerate3;
-  let pricerate_4;
-  let pricerate4;
   let t = 0;
   let date1 = new Date();
   let start_date1 = new Date(date1.setHours(date1.getHours() + 5));
@@ -404,12 +390,6 @@ const monthlyPublishTicketResult = async (req, res) => {
   start_date.setDate(start_date.getDate() - 1);
   start_date.setHours(17, 0, 0, 0);
   date.setHours(17, 0, 0, 0);
-  console.log(start_date, date);
-  let ticket_data = await Monthly_Tickets.find({});
-
-  let price_rate = await PriceRate.findOne({});
-
-  let ticket_rate = await TicketRate.findOne({});
 
   let result_add = await Result.create({
     winning_ticket: [
@@ -422,120 +402,6 @@ const monthlyPublishTicketResult = async (req, res) => {
 
     CreatedAt: date1,
   });
-  console.log(req.body.ticket_1, req.body.ticket_2, req.body.ticket_3);
-
-  for (let i = 0; i < ticket_data.length; i++) {
-    userid = ticket_data[i].userId;
-    for (let j = 0; j < 4; j++) {
-      if (j === 0) {
-        if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-          firstdigit = req.body[j].digit;
-
-          let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-            {
-              ticketId: ticket_data[i].ticketId,
-            },
-            {
-              "ticket.0.status": "true",
-            }
-          );
-        } else {
-          let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-            {
-              ticketId: ticket_data[i].ticketId,
-            },
-            {
-              "ticket.0.status": "false",
-            }
-          );
-        }
-      } else if (j === 1) {
-        if (firstdigit !== undefined) {
-          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            seconddigit = req.body[j].digit;
-
-            let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.1.status": "true",
-              }
-            );
-          } else {
-            let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.1.status": "false",
-              }
-            );
-          }
-        }
-      } else if (j === 2) {
-        if (seconddigit != undefined) {
-          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            thirddigit = req.body[j].digit;
-
-            let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.2.status": "true",
-              }
-            );
-          } else {
-            let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.2.status": "false",
-              }
-            );
-          }
-        }
-      } else if (j === 3) {
-        if (thirddigit != undefined) {
-          if (ticket_data[i].ticket[j].digit === parseInt(req.body[j].digit)) {
-            let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.3.status": "true",
-              }
-            );
-            console.log(ticket_update, "Inside 0");
-          } else {
-            let ticket_update = await Monthly_Tickets.findOneAndUpdate(
-              {
-                ticketId: ticket_data[i].ticketId,
-              },
-              {
-                "ticket.3.status": "false",
-              }
-            );
-          }
-        }
-      }
-    }
-    if (
-      firstdigit != undefined &&
-      seconddigit != undefined &&
-      thirddigit != undefined &&
-      fourthdigit != undefined
-    ) {
-      t += 1;
-    }
-
-    firstdigit = undefined;
-    seconddigit = undefined;
-    thirddigit = undefined;
-    fourthdigit = undefined;
-  }
 
   return res
     .status(200)
