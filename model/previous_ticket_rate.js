@@ -6,6 +6,7 @@ const previousTicketRate = Schema({
     type: Number,
     default: null,
   },
+
   previous_daily_ticket_rate_called: {
     type: Number,
     default: null,
