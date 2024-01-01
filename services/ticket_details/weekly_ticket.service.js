@@ -929,12 +929,13 @@ cron.schedule("0 18 * * FRI", async () => {
 
 cron.schedule("0 19 * * FRI", async () => {
   console.log("cron running at 7 pm everyday");
-  await Weekly_Tickets.deleteMany({});
+
   await WeeklyHistory.deleteMany({});
 });
 
 cron.schedule("0 20 * * FRI", async () => {
   console.log("cron running at 8 pm everyday");
+    await Weekly_Tickets.deleteMany({});
   await WeeklyResult.deleteMany({});
 });
 

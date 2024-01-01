@@ -1222,12 +1222,12 @@ cron.schedule("0 17 * * *", async () => {
 
 cron.schedule("0 18 * * *", async () => {
   console.log("cron running at 6 pm everyday");
-  await Ticket.deleteMany({});
   await DailyHistory.deleteMany({});
 });
 
 cron.schedule("0 19 * * *", async () => {
   console.log("cron running at 7 pm everyday");
+  await Ticket.deleteMany({});
   let reault_delete = await Result.deleteMany({});
 });
 
