@@ -369,7 +369,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
 
     const tmp_ticket = await previousTicketRate.findOne({});
     const result = await WeeklyResult.findOne({});
-
+    userid = ticket_data[0].userId;
     const tmp_result = Array.from(result.result_ticket).map(Number);
     if (tmp_ticket.previous_weekly_ticket_rate_called === null) {
       for (let i = 0; i < ticket_data.length; i++) {
@@ -682,7 +682,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
         fourthdigit = undefined;
       }
 
-      const new_ticket_rate = await weeklyticketrate.findOne({});
+      const new_ticket_rate = await TicketRate.findOne({});
 
       await previousTicketRate.updateMany({
         previous_weekly_ticket_rate: new_ticket_rate.ticketRate,
@@ -750,7 +750,7 @@ const addWeeklyTicketRate = async (req, res) => {
 //  Get Weekly ticket rate
 const getWeeklyTicketRate = async (req, res) => {
   try {
-    let get_ticket_rate = await weeklyticketrate.findOne({});
+    let get_ticket_rate = await TicketRate.findOne({});
 
     return res
       .status(200)
@@ -919,7 +919,7 @@ const getWeeklyHistory = async (req, res) => {
 
 cron.schedule("0 18 * * FRI", async () => {
   console.log("cron running at 7 pm everyday");
-  await weeklyticketrate.deleteMany({});
+  await TicketRate.deleteMany({});
   await PriceRate.deleteMany({});
   await WeeklyTicketCount.updateMany({
     alreadyWeeklyTicketCount: 0,

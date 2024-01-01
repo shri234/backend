@@ -356,7 +356,7 @@ const getTickets = async (req, res) => {
   }
 };
 
-const addDailyPriceAmountToWallet = async (req, res) => {
+const addPriceAmountToWallet = async (req, res) => {
   try {
     let firstdigit;
     let userid;
@@ -379,6 +379,8 @@ const addDailyPriceAmountToWallet = async (req, res) => {
 
     const tmp_ticket = await previousTicketRate.findOne({});
     const result = await Result.findOne({});
+
+    userid = ticket_data[0].userId;
 
     const tmp_result = Array.from(result.result_ticket).map(Number);
     if (tmp_ticket.previous_daily_ticket_rate_called === null) {
@@ -415,6 +417,7 @@ const addDailyPriceAmountToWallet = async (req, res) => {
                   "ticket.0.status": "true",
                 }
               );
+
               await DailyHistory.updateMany(
                 {
                   userId: parseInt(ticket_data[i].userId),
@@ -703,6 +706,9 @@ const addDailyPriceAmountToWallet = async (req, res) => {
     let get_tickets = await Ticket.find({
       userId: userid,
     });
+
+    console.log("first", get_tickets, userid);
+
     return res.status(200).json({ response: "success", data: get_tickets });
   } catch (err) {
     console.log(err);
@@ -713,7 +719,7 @@ const publish_result = async (req, res) => {
   try {
     let t = 0;
     let date1 = new Date();
-    let start_date1 = new Date(date1.setHours(date1.getHours() + 5));
+    new Date(date1.setHours(date1.getHours() + 5));
     new Date(date1.setMinutes(date1.getMinutes() + 30));
     let start_date = new Date(req.query.date);
     let date = new Date(req.query.date);
@@ -1257,5 +1263,5 @@ module.exports = {
   callSecondApi2,
   getDailyTicketCount,
   getWalletAmount,
-  addPriceAmountToWallet: addDailyPriceAmountToWallet,
+  addPriceAmountToWallet,
 };

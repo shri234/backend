@@ -12,7 +12,7 @@ const io = socketIO(server);
 const cron = require("node-cron");
 
 const User = require("./services/auth/auth.controller");
-const ticket_details = require("./services/ticket_details/ticket_details.contrroller");
+const ticket_details = require("./services/ticket_details/ticket_details.controller");
 const payment_details = require("./services/payment_details/payment_details.controller");
 
 mongoose.connect(
@@ -22,7 +22,6 @@ mongoose.connect(
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-
 
 app.use(cors());
 
