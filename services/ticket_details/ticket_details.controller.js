@@ -45,6 +45,8 @@ router.get(
 );
 router.get("/get-monthly-result", monthly_ticket.getMonthlyResult);
 
+router.get("/get-monthly-price-amount", monthly_ticket.monthlyResultTicket);
+
 // dayily api's
 router.post("/add-daily-ticket", tickets.addTicketDaily);
 router.get("/get-daily-minimum", tickets.getMinimum);
