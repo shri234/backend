@@ -102,6 +102,121 @@ const addMonthlyTicketCount = async (req, res) => {
   }
 };
 
+const monthlyResultTicket = async (req, res) => {
+  try {
+    let userid;
+
+    let ticket_data = await Monthly_Tickets.find({});
+
+    await PriceRate.findOne({});
+
+    const tmp_ticket = await previousTicketRate.findOne({});
+
+    const result = await Result.findOne({});
+
+    userid = ticket_data[0].userId;
+
+    if (tmp_ticket.previous_montly_ticket_rate_called === null) {
+      for (let i = 0; i < ticket_data.length; i++) {
+        userid = ticket_data[i].userId;
+        console.log(ticket_data[i].ticket, result.result_ticket_1);
+        if (
+          ticket_data[i].ticket === result.result_ticket_1 ||
+          result.result_ticket_2 ||
+          result.result_ticket_3
+        ) {
+          await Monthly_Tickets.findOneAndUpdate(
+            {
+              ticketId: ticket_data[i].ticketId,
+            },
+            {
+              "ticket.0.status": "true",
+              "ticket.1.status": "true",
+              "ticket.2.status": "true",
+              "ticket.3.status": "true",
+            }
+          );
+
+          await MonthlyHistory.updateMany(
+            {
+              userId: parseInt(ticket_data[i].userId),
+            },
+            {
+              "ticket.0.status": "true",
+              "ticket.1.status": "true",
+              "ticket.2.status": "true",
+              "ticket.3.status": "true",
+            }
+          );
+
+          await History.updateMany(
+            {
+              userId: parseInt(ticket_data[i].userId),
+            },
+            {
+              "ticket.0.status": "true",
+              "ticket.1.status": "true",
+              "ticket.2.status": "true",
+              "ticket.3.status": "true",
+            }
+          );
+        } else {
+          await Monthly_Tickets.findOneAndUpdate(
+            {
+              ticketId: ticket_data[i].ticketId,
+            },
+            {
+              "ticket.0.status": "false",
+              "ticket.1.status": "false",
+              "ticket.2.status": "false",
+              "ticket.3.status": "false",
+            }
+          );
+
+          await MonthlyHistory.updateMany(
+            {
+              userId: parseInt(ticket_data[i].userId),
+            },
+            {
+              "ticket.0.status": "false",
+              "ticket.1.status": "false",
+              "ticket.2.status": "false",
+              "ticket.3.status": "false",
+            }
+          );
+
+          await History.updateMany(
+            {
+              userId: parseInt(ticket_data[i].userId),
+            },
+            {
+              "ticket.0.status": "false",
+              "ticket.1.status": "false",
+              "ticket.2.status": "false",
+              "ticket.3.status": "false",
+            }
+          );
+        }
+      }
+
+      const new_ticket_rate = await TicketRate.findOne({});
+
+      await previousTicketRate.updateMany({
+        previous_monthly_ticket_rate: new_ticket_rate.ticketRate,
+        previous_monthly_ticket_rate_called: 1,
+      });
+    }
+
+    let get_tickets = await Monthly_Tickets.find({
+      userId: userid,
+    });
+
+    return res.status(200).json({ response: "success", data: get_tickets });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 // Get ticket's
 const getMonthlyTickets = async (req, res) => {
   try {
@@ -378,346 +493,6 @@ const getMinimumMonthlyTicket = async (req, res) => {
   });
 };
 
-// const ticketResult = async (req, res) => {
-//   try {
-//     let firstdigit;
-//     let userid;
-//     let seconddigit;
-//     let thirddigit;
-//     let fourthdigit;
-//     let pricerate_1;
-//     let pricerate1;
-//     let pricerate_2;
-//     let pricerate2;
-//     let pricerate_3;
-//     let pricerate_4;
-//     let pricerate4;
-//     let pricerate3;
-//     let t = 0;
-
-//     let ticket_data = await Ticket.find({});
-
-//     let price_rate = await PriceRate.findOne({});
-
-//     const tmp_ticket = await previousTicketRate.findOne({});
-//     const result = await Result.findOne({});
-
-//     userid = ticket_data[0].userId;
-
-//     const tmp_result = Array.from(result.result_ticket).map(Number);
-//     if (tmp_ticket.previous_daily_ticket_rate_called === null) {
-//       for (let i = 0; i < ticket_data.length; i++) {
-//         userid = ticket_data[i].userId;
-//         for (let j = 0; j < 4; j++) {
-//           if (j === 0) {
-//             if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
-//               await Ticket.findOneAndUpdate(
-//                 {
-//                   ticketId: ticket_data[i].ticketId,
-//                 },
-//                 {
-//                   "ticket.0.status": "true",
-//                 }
-//               );
-
-//               await MonthlyHistory.updateMany(
-//                 {
-//                   userId: parseInt(ticket_data[i].userId),
-//                 },
-//                 {
-//                   "ticket.0.status": "true",
-//                 }
-//               );
-
-//               await History.updateMany(
-//                 {
-//                   userId: parseInt(ticket_data[i].userId),
-//                 },
-//                 {
-//                   "ticket.0.status": "true",
-//                 }
-//               );
-//             } else {
-//               await Ticket.findOneAndUpdate(
-//                 {
-//                   ticketId: ticket_data[i].ticketId,
-//                 },
-//                 {
-//                   "ticket.0.status": "false",
-//                 }
-//               );
-//               await DailyHistory.updateMany(
-//                 {
-//                   userId: parseInt(ticket_data[i].userId),
-//                 },
-//                 {
-//                   "ticket.0.status": "false",
-//                 }
-//               );
-//               await History.updateMany(
-//                 {
-//                   userId: parseInt(ticket_data[i].userId),
-//                 },
-//                 {
-//                   "ticket.0.status": "false",
-//                 }
-//               );
-//             }
-//           } else if (j === 1) {
-//             if (firstdigit !== undefined) {
-//               if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
-//                 seconddigit = tmp_result[j];
-//                 if (price_rate != null) {
-//                   pricerate_2 = price_rate.priceRate_splitup[0].second_digit;
-//                   pricerate2 =
-//                     pricerate_2 * tmp_ticket.previous_daily_ticket_rate;
-//                 }
-
-//                 let wallet_find = await Wallet.findOne({
-//                   userId: parseInt(ticket_data[i].userId),
-//                 });
-//                 await Wallet.findOneAndUpdate(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     amount: wallet_find.amount + pricerate2,
-//                   }
-//                 );
-//                 await Ticket.findOneAndUpdate(
-//                   {
-//                     ticketId: ticket_data[i].ticketId,
-//                   },
-//                   {
-//                     "ticket.1.status": "true",
-//                   }
-//                 );
-//                 await DailyHistory.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.1.status": "true",
-//                   }
-//                 );
-//                 await History.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.1.status": "true",
-//                   }
-//                 );
-//               } else {
-//                 await Ticket.findOneAndUpdate(
-//                   {
-//                     ticketId: ticket_data[i].ticketId,
-//                   },
-//                   {
-//                     "ticket.1.status": "false",
-//                   }
-//                 );
-//                 await DailyHistory.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.1.status": "false",
-//                   }
-//                 );
-//                 await History.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.1.status": "false",
-//                   }
-//                 );
-//               }
-//             }
-//           } else if (j === 2) {
-//             if (seconddigit != undefined) {
-//               if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
-//                 thirddigit = tmp_result[j];
-//                 if (price_rate != null) {
-//                   pricerate_3 = price_rate.priceRate_splitup[0].third_digit;
-//                   pricerate3 =
-//                     pricerate_3 * tmp_ticket.previous_daily_ticket_rate;
-//                 }
-//                 let wallet_find = await Wallet.findOne({
-//                   userId: parseInt(ticket_data[i].userId),
-//                 });
-
-//                 await Wallet.findOneAndUpdate(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     amount: wallet_find.amount + pricerate3,
-//                   }
-//                 );
-
-//                 await Ticket.findOneAndUpdate(
-//                   {
-//                     ticketId: ticket_data[i].ticketId,
-//                   },
-//                   {
-//                     "ticket.2.status": "true",
-//                   }
-//                 );
-//                 await DailyHistory.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.2.status": "true",
-//                   }
-//                 );
-//                 await History.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.2.status": "true",
-//                   }
-//                 );
-//               } else {
-//                 await Ticket.findOneAndUpdate(
-//                   {
-//                     ticketId: ticket_data[i].ticketId,
-//                   },
-//                   {
-//                     "ticket.2.status": "false",
-//                   }
-//                 );
-//                 await DailyHistory.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.2.status": "false",
-//                   }
-//                 );
-//                 await History.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.2.status": "false",
-//                   }
-//                 );
-//               }
-//             }
-//           } else if (j === 3) {
-//             if (thirddigit != undefined) {
-//               if (ticket_data[i].ticket[j].digit === parseInt(tmp_result[j])) {
-//                 if (price_rate != null) {
-//                   pricerate_4 = price_rate.priceRate_splitup[0].fourth_digit;
-//                   pricerate4 =
-//                     pricerate_4 * tmp_ticket.previous_daily_ticket_rate;
-//                 }
-//                 let wallet_find = await Wallet.findOne({
-//                   userId: parseInt(ticket_data[i].userId),
-//                 });
-
-//                 await Wallet.findOneAndUpdate(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     amount: wallet_find.amount + pricerate4,
-//                   }
-//                 );
-
-//                 await Ticket.findOneAndUpdate(
-//                   {
-//                     ticketId: ticket_data[i].ticketId,
-//                   },
-//                   {
-//                     "ticket.3.status": "true",
-//                   }
-//                 );
-//                 await DailyHistory.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.3.status": "true",
-//                   }
-//                 );
-//                 await History.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.3.status": "true",
-//                   }
-//                 );
-//               } else {
-//                 await Ticket.findOneAndUpdate(
-//                   {
-//                     ticketId: ticket_data[i].ticketId,
-//                   },
-//                   {
-//                     "ticket.3.status": "false",
-//                   }
-//                 );
-//                 await DailyHistory.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.3.status": "false",
-//                   }
-//                 );
-//                 await History.updateMany(
-//                   {
-//                     userId: parseInt(ticket_data[i].userId),
-//                   },
-//                   {
-//                     "ticket.3.status": "false",
-//                   }
-//                 );
-//               }
-//             }
-//           }
-//         }
-//         if (
-//           firstdigit != undefined &&
-//           seconddigit != undefined &&
-//           thirddigit != undefined &&
-//           fourthdigit != undefined
-//         ) {
-//           t += 1;
-//         }
-
-//         firstdigit = undefined;
-//         seconddigit = undefined;
-//         thirddigit = undefined;
-//         fourthdigit = undefined;
-//       }
-
-//       const new_ticket_rate = await TicketRate.findOne({});
-
-//       await previousTicketRate.updateMany({
-//         previous_daily_ticket_rate: new_ticket_rate.ticketRate,
-//         previous_daily_ticket_rate_called: 1,
-//       });
-//     }
-
-//     let get_tickets = await Ticket.find({
-//       userId: userid,
-//     });
-
-//     console.log("first", get_tickets, userid);
-
-//     return res.status(200).json({ response: "success", data: get_tickets });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
-// Monthly publish
 const monthlyPublishTicketResult = async (req, res) => {
   let t = 0;
   let date1 = new Date();
@@ -751,15 +526,10 @@ const monthlyPublishTicketResult = async (req, res) => {
 const getMonthlyBuyedTicketCount = async (req, res) => {
   try {
     let get_ticket_count;
-    if (req.query) {
-      get_ticket_count = await MonthlyTicketCount.findOne({
-        userId: req.query.userId,
-      });
-    } else {
-      get_ticket_count = await MonthlyTicketCount.findOne({
-        userId: userId,
-      });
-    }
+
+    get_ticket_count = await MonthlyTicketCount.findOne({
+      userId: req.query.userId,
+    });
 
     return res.status(200).json({ data: get_ticket_count });
   } catch (err) {
@@ -934,4 +704,5 @@ module.exports = {
   getMonthlyBuyedTicketCount,
   getMonthlyResult,
   getMonthlyHistory,
+  monthlyResultTicket,
 };
