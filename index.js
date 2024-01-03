@@ -16,7 +16,7 @@ const ticket_details = require("./services/ticket_details/ticket_details.control
 const payment_details = require("./services/payment_details/payment_details.controller");
 
 mongoose.connect(
-  "mongodb+srv://shri0406:shri0406@cluster0.vebkxa6.mongodb.net/Proj"
+  "mongodb+srv://test0406:test0406123@cluster0.5w6vuab.mongodb.net/Proj"
 );
 
 app.set("view engine", "ejs");
