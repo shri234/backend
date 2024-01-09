@@ -60,7 +60,7 @@ const addTicketWeekly = async (req, res) => {
       username: user_find.username,
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
-      id: id,
+      ticketId: ticketId,
       CreatedAt: date,
     });
     res.status(200).json({ response: "Data inserted successfully" });
@@ -406,8 +406,8 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
                 }
               );
               await DailyHistory.updateMany(
-                {
-                  userId: parseInt(ticket_data[i].userId),
+                {  
+                  ticketId: ticket_data[i].ticketId,
                 },
                 {
                   "ticket.0.status": "true",
@@ -433,7 +433,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
               );
               await DailyHistory.updateMany(
                 {
-                  userId: parseInt(ticket_data[i].userId),
+                   ticketId: ticket_data[i].ticketId,
                 },
                 {
                   "ticket.0.status": "false",
@@ -479,7 +479,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                     ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.1.status": "true",
@@ -552,7 +552,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                     ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.2.status": "true",
@@ -577,7 +577,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.2.status": "false",
@@ -624,7 +624,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                      ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.3.status": "true",
@@ -649,7 +649,7 @@ const addWeeklyPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.3.status": "false",
