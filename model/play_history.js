@@ -5,9 +5,8 @@ const Schema = mongoose.Schema;
 // const AutoIncrement = require('mongoose-sequence')(mongoose); // Import the plugin
 
 let PlayHistory = new Schema({
-  id: {
+  ticketId: {
     type: Number,
-    default: 0,
   },
   username: {
     type: String,

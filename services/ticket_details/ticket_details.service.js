@@ -54,11 +54,12 @@ const addTicketDaily = async (req, res) => {
     }
 
     const id = await getNextSequenceValue("id");
+
     let user_history = await History.create({
       username: user_find.username,
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
-      id: id,
+      ticketId: ticketId,
     });
     let add_history = await DailyHistory.create({
       username: user_find.username,
@@ -430,7 +431,7 @@ const addPriceAmountToWallet = async (req, res) => {
 
               await History.updateMany(
                 {
-                  userId: parseInt(ticket_data[i].userId),
+                  ticketId: parseInt(ticket_data[i].ticketId),
                 },
                 {
                   "ticket.0.status": "true",
@@ -455,7 +456,7 @@ const addPriceAmountToWallet = async (req, res) => {
               );
               await History.updateMany(
                 {
-                  userId: parseInt(ticket_data[i].userId),
+                  ticketId: parseInt(ticket_data[i].ticketId),
                 },
                 {
                   "ticket.0.status": "false",
@@ -501,7 +502,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await History.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: parseInt(ticket_data[i].ticketId),
                   },
                   {
                     "ticket.1.status": "true",
@@ -518,7 +519,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                     ticketId: ticket_data[i].ticketId,
+                    ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.1.status": "false",
@@ -526,7 +527,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await History.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: parseInt(ticket_data[i].ticketId),
                   },
                   {
                     "ticket.1.status": "false",
@@ -566,7 +567,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                     ticketId: ticket_data[i].ticketId,
+                    ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.2.status": "true",
@@ -574,7 +575,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await History.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: parseInt(ticket_data[i].ticketId),
                   },
                   {
                     "ticket.2.status": "true",
@@ -599,7 +600,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await History.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: parseInt(ticket_data[i].ticketId),
                   },
                   {
                     "ticket.2.status": "false",
@@ -638,7 +639,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await DailyHistory.updateMany(
                   {
-                     ticketId: ticket_data[i].ticketId,
+                    ticketId: ticket_data[i].ticketId,
                   },
                   {
                     "ticket.3.status": "true",
@@ -646,7 +647,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await History.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: parseInt(ticket_data[i].ticketId),
                   },
                   {
                     "ticket.3.status": "true",
@@ -671,7 +672,7 @@ const addPriceAmountToWallet = async (req, res) => {
                 );
                 await History.updateMany(
                   {
-                    userId: parseInt(ticket_data[i].userId),
+                    ticketId: parseInt(ticket_data[i].ticketId),
                   },
                   {
                     "ticket.3.status": "false",
