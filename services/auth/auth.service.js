@@ -147,6 +147,7 @@ const getAllUser = async (req, res) => {
       mobileNumber: user.mobileNumber,
       userId: user.userId,
       upi_id: user.upi_id,
+      IFSC: user.IFSC,
     }));
 
     // Get total count of user documents
