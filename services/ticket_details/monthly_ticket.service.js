@@ -139,7 +139,7 @@ const monthlyResultTicket = async (req, res) => {
 
           await MonthlyHistory.updateMany(
             {
-              userId: parseInt(ticket_data[i].userId),
+              ticketId: parseInt(ticket_data[i].ticketId),
             },
             {
               "ticket.0.status": "true",
@@ -151,7 +151,7 @@ const monthlyResultTicket = async (req, res) => {
 
           await History.updateMany(
             {
-              userId: parseInt(ticket_data[i].userId),
+              ticketId: parseInt(ticket_data[i].ticketId),
             },
             {
               "ticket.0.status": "true",
@@ -175,7 +175,7 @@ const monthlyResultTicket = async (req, res) => {
 
           await MonthlyHistory.updateMany(
             {
-              userId: parseInt(ticket_data[i].userId),
+              ticketId: parseInt(ticket_data[i].ticketId),
             },
             {
               "ticket.0.status": "false",
@@ -187,7 +187,7 @@ const monthlyResultTicket = async (req, res) => {
 
           await History.updateMany(
             {
-              userId: parseInt(ticket_data[i].userId),
+              ticketId: parseInt(ticket_data[i].ticketId),
             },
             {
               "ticket.0.status": "false",
