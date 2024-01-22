@@ -28,7 +28,7 @@ const addTicketWeekly = async (req, res) => {
       userId: parseInt(req.body.userId),
     });
     if (wallet_u.weeklyTicketCount > 0) {
-      let wallet_update = await WeeklyTicketCount.updateOne(
+      await WeeklyTicketCount.updateOne(
         {
           userId: parseInt(req.body.userId),
         },
@@ -37,9 +37,9 @@ const addTicketWeekly = async (req, res) => {
         }
       );
       let date = new Date();
-      let start_date = new Date(date.setHours(date.getHours() + 5));
+      new Date(date.setHours(date.getHours() + 5));
       new Date(date.setMinutes(date.getMinutes() + 30));
-      const add_ticket = await Weekly_Tickets.create({
+      await Weekly_Tickets.create({
         userId: parseInt(req.body.userId),
         ticketId: ticketId,
         ticket: req.body.ticket,
@@ -49,20 +49,21 @@ const addTicketWeekly = async (req, res) => {
       console.log("tickets you have bought is over please buy more and try");
     }
 
-    const id = await getNextSequenceValue("id");
-    let user_history = await History.create({
+    await History.create({
       username: user_find.username,
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
-      id: id,
+      ticketId: ticketId,
     });
-    let weekly_history = await WeeklyHistory.create({
+
+    await WeeklyHistory.create({
       username: user_find.username,
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
       ticketId: ticketId,
       CreatedAt: date,
     });
+
     res.status(200).json({ response: "Data inserted successfully" });
   } catch (error) {
     console.error("Error adding ticket:", error);
