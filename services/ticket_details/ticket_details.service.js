@@ -1,5 +1,3 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const Ticket = require("../../model/tickets");
 const Counter = require("../../model/Counter");
 const History = require("../../model/play_history");
@@ -32,7 +30,7 @@ const addTicketDaily = async (req, res) => {
       userId: parseInt(req.body.userId),
     });
     if (wallet_u.dailyTicketCount > 0) {
-      let wallet_update = await DailyTicketCount.updateOne(
+      await DailyTicketCount.updateOne(
         {
           userId: parseInt(req.body.userId),
         },
@@ -41,9 +39,9 @@ const addTicketDaily = async (req, res) => {
         }
       );
       let date = new Date();
-      let start_date = new Date(date.setHours(date.getHours() + 5));
+      new Date(date.setHours(date.getHours() + 5));
       new Date(date.setMinutes(date.getMinutes() + 30));
-      const add_ticket = await Ticket.create({
+      await Ticket.create({
         userId: parseInt(req.body.userId),
         ticketId: ticketId,
         ticket: req.body.ticket,
@@ -53,15 +51,13 @@ const addTicketDaily = async (req, res) => {
       console.log("tickets you have bought is over please buy more and try");
     }
 
-    const id = await getNextSequenceValue("id");
-
-    let user_history = await History.create({
+    await History.create({
       username: user_find.username,
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
       ticketId: ticketId,
     });
-    let add_history = await DailyHistory.create({
+    await DailyHistory.create({
       username: user_find.username,
       userId: parseInt(req.body.userId),
       ticket: req.body.ticket,
